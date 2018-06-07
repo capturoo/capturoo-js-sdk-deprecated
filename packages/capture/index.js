@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import capturoo from '@capturoo/app';
-import Capture from './lib/capture';
+const capturoo = require('@capturoo/app');
+const Capture = require('./lib/capture');
 
 export function registerCapture(instance) {
   instance.registerService('capture', () => { return new Capture(capturoo.config) });

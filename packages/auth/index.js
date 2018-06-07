@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import capturoo from '@capturoo/app';
-import Auth from './lib/auth';
+const capturoo = require('@capturoo/app');
+const Auth = require('./lib/auth');
 
-export function registerAuth(instance) {
+console.log(capturoo);
+function registerAuth(instance) {
   instance.registerService('auth', () => { return new Auth(capturoo.config) });
 }
 
 registerAuth(capturoo);
+
+module.exports = capturoo;
