@@ -1,0 +1,6 @@
+{
+  "name": "capturoo/app",
+  "main": "dist/index.cjs.js",
+  "browser": "dist/index.cjs.js",
+  "module": "dist/index.esm.js"
+}

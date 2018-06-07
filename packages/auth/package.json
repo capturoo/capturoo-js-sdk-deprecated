@@ -1,0 +1,28 @@
+{
+  "name": "@capturoo/auth",
+  "version": "0.1.0",
+  "description": "JavaScript library for Capturoo Auth SDK",
+  "author": "Capturoo <support@capturoo.com> (https://www.capturoo.com/)",
+  "license": "Apache-2.0",
+  "main": "dist/index.node.cjs.js",
+  "browser": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "files": [
+    "dist/index.cjs.js",
+    "dist/index.esm.js",
+    "dist/index.node.cjs.js"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.7.0",
+    "rollup": "^0.60.0",
+    "rollup-plugin-babel": "^3.0.4",
+    "rollup-plugin-node-resolve": "^3.3.0"
+  },
+  "dependencies": {}
+}

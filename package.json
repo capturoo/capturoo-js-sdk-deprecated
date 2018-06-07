@@ -1,0 +1,15 @@
+{
+  "name": "capturoo-wrapper",
+  "version": "0.1.0",
+  "description": "Monorepo for the Capturoo JavaScript SDK",
+  "private": true,
+  "author": "Capturoo <support@capturoo.com> (https://www.capturoo.com/)",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [
+    "dist"
+  ],
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,55 @@
+{
+  "name": "capturoo-dashboard-sdk",
+  "version": "4.0.0",
+  "description": "Manage component of the Capturoo JS SDK",
+  "author": "Capturoo <support@capturoo.com> (https://www.capturoo.com/)",
+  "main": "dist/index.node.cjs.js",
+  "browser": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "nyc --all --clean --reporter=text --reporter=html mocha --slow 3000 test/admin-sdk.test.js",
+    "test-leads": "nyc --all --clean --reporter=text --reporter=html mocha test/leads.test.js",
+    "coverage": "open -a \"/Applications/Google Chrome.app\" coverage/index.html"
+  },
+  "files": [
+    "dist/index.node.cjs.js",
+    "dist/index.cjs.js",
+    "dist/index.esm.js"
+  ],
+  "nyc": {
+    "include": [
+      "**"
+    ],
+    "exclude": [
+      "index.js",
+      "config.js",
+      "webpack.config.js",
+      "coverage/**",
+      "test/**",
+      "test{,-*}.js",
+      "**/*.test.js",
+      "**/*_test.js",
+      "**/__tests__/**",
+      "**/node_modules/**"
+    ]
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.1.1",
+    "nyc": "^12.0.1",
+    "rollup": "^0.60.0",
+    "rollup-plugin-commonjs": "^9.1.3",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-resolve": "^3.3.0"
+  },
+  "peerDependencies": {
+    "@capturoo/app": "0.1.0"
+  },
+  "dependencies": {
+    "@firebase/app": "^0.3.2",
+    "@firebase/auth": "^0.5.2",
+    "node-fetch": "^2.1.2"
+  }
+}

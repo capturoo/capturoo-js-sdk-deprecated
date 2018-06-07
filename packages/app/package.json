@@ -1,0 +1,21 @@
+{
+  "name": "@capturoo/app",
+  "version": "0.1.0",
+  "description": "The primary entrypoint to the Capturoo JS SDK",
+  "author": "Capturoo <support@capturoo.com> (https://www.capturoo.com/)",
+  "main": "dist/index.node.cjs.js",
+  "browser": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w"
+  },
+  "files": [
+    "dist/index.node.cjs.js",
+    "dist/index.cjs.js",
+    "dist/index.esm.js"
+  ],
+  "devDependencies": {
+    "rollup-plugin-node-resolve": "^3.3.0"
+  }
+}
