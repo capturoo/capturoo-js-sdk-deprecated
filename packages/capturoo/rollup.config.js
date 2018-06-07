@@ -15,12 +15,14 @@
  */
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
-import uglify from 'rollup-plugin-uglify';
+import babel from 'rollup-plugin-babel';
+//import { uglify } from 'rollup-plugin-uglify';
 import path from 'path';
 import appPkg from './app/package.json';
 import authPkg from './auth/package.json';
 import capturePkg from './capture/package.json';
 import managePkg from './manage/package.json';
+import pkg from './package.json';
 
 const pkgsByName = {
   app: appPkg,
@@ -30,9 +32,14 @@ const pkgsByName = {
 };
 
 const plugins = [
+  babel({
+    exclude: 'node_modules/**'
+  }),
   resolve(),
   commonjs()
 ];
+
+const external = Object.keys(pkg.dependencies || {});
 
 /**
  * Global UMD Build
@@ -46,27 +53,28 @@ const appBuilds = [
   /**
    * App Browser Builds
    */
-  {
-    input: 'app/index.js',
-    output: [
-      { file: path.resolve('app', appPkg.main), format: 'cjs' },
-      { file: path.resolve('app', appPkg.module), format: 'es' }
-    ],
-    plugins
-  },
+  //{
+  //  input: 'app/index.js',
+  //  output: [
+  //    { file: path.resolve('app', appPkg.main), format: 'cjs' },
+  //    { file: path.resolve('app', appPkg.module), format: 'es' }
+  //  ],
+  //  plugins
+  //},
   /**
    * App UMD Builds
    */
-  {
-    input: 'app/index.js',
-    output: {
-      file: 'capturoo-app.js',
-      sourcemap: true,
-      format: 'umd',
-      name: GLOBAL_NAME
-    },
-    plugins: [...plugins, uglify()]
-  }
+  //{
+  //  input: 'app/index.js',
+  //  output: {
+  //    dir: 'dist',
+  //    file: 'capturoo-app.js',
+  //    sourcemap: true,
+  //    format: 'umd',
+  //    name: GLOBAL_NAME
+  //  },
+  //  plugins: [...plugins, uglify()]
+  //}
 ];
 
 const components = [
@@ -78,17 +86,18 @@ const componentBuilds = components
   .map(component => {
     const pkg = pkgsByName[component];
     return [
-      {
-        input: `${component}/index.js`,
-        output: [
-          { file: path.resolve(component, pkg.main), format: 'cjs' },
-          { file: path.resolve(component, pkg.module), format: 'es' }
-        ],
-        plugins
-      },
+      //{
+      //  input: `${component}/index.js`,
+      //  output: [
+      //    { dir: 'dist', file: path.resolve(component, pkg.main), format: 'cjs' },
+      //    { dir: 'dist', file: path.resolve(component, pkg.module), format: 'es' }
+      //  ],
+      //  plugins
+      //},
       {
         input: `${component}/index.js`,
         output: {
+          dir: 'dist',
           file: `capturoo-${component}.js`,
           format: 'iife',
           sourcemap: true,
@@ -106,7 +115,9 @@ const componentBuilds = components
               );
             }`
         },
-        plugins: [...plugins, uglify()]
+        //plugins: [...plugins, uglify()]
+        plugins: [...plugins],
+        external: ['@capturoo/app']
       }
     ];
   })
@@ -119,32 +130,33 @@ const completeBuilds = [
   /**
    * App Browser Builds
    */
-  {
-    input: 'src/index.js',
-    output: [
-      { file: pkg.browser, format: 'cjs' },
-      { file: pkg.module, format: 'es' }
-    ],
-    plugins
-  },
-  {
-    input: 'src/index.cdn.js',
-    output: {
-      file: 'capturoo.js',
-      format: 'umd',
-      name: GLOBAL_NAME
-    },
-    plugins: [...plugins, uglify()]
-  },
+  //{
+  //  input: 'src/index.js',
+  //  output: [
+  //    { dir: 'dist', file: pkg.browser, format: 'cjs' },
+  //    { dir: 'dist', file: pkg.module, format: 'es' }
+  //  ],
+  //  plugins
+  //},
+  //{
+  //  input: 'src/index.cdn.js',
+  //  output: {
+  //    dir: 'dist',
+  //    file: 'dist/capturoo.js',
+  //    format: 'umd',
+  //    name: GLOBAL_NAME
+  //  },
+  //  plugins: [...plugins, uglify()]
+  //},
   /**
    * App Node.js Builds
    */
-  {
-    input: 'src/index.node.js',
-    output: { file: pkg.main, format: 'cjs' },
-    plugins
-  }
+  //{
+  //  dir: 'dist',
+  //  input: 'src/index.node.js',
+  //  output: { file: pkg.main, format: 'cjs' },
+  //  plugins
+  //}
 ];
 
 export default [...appBuilds, ...componentBuilds, ...completeBuilds];
-

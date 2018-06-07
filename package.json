@@ -6,6 +6,7 @@
   "author": "Capturoo <support@capturoo.com> (https://www.capturoo.com/)",
   "main": "dist/index.js",
   "scripts": {
+    "cleandists": "find . -type d -name dist -exec rm -rf {} \\;",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "files": [

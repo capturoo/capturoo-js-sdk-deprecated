@@ -32,9 +32,8 @@ import 'capturoo/<PACKAGE>';
 `);
 
 import capturoo from '../app';
-
 import '../auth';
 import '../capture';
-import '../manager';
+import '../manage';
 
 export default capturoo;
