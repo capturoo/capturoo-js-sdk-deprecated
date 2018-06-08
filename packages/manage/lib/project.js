@@ -31,11 +31,11 @@ class Project {
    */
   async createLead(data) {
     try {
-      let res = await fetch(`${this._sdk.config.fetch.endpoint}/leads`, {
+      let res = await fetch(`${this._sdk.config.capture.endpoint}/leads`, {
         body: JSON.stringify({
-         system: {},
-         tracking: {},
-         lead: data
+          system: {},
+          tracking: {},
+          lead: data
         }),
         method: 'POST',
         headers: {
@@ -66,7 +66,7 @@ class Project {
    */
   async lead(leadId) {
     try {
-      let res = await fetch(`${this._sdk.config.fetch.endpoint}/projects/${this.projectId}/leads/${leadId}`, {
+      let res = await fetch(`${this._sdk.config.capture.endpoint}/projects/${this.projectId}/leads/${leadId}`, {
         headers: {
           'Content-Type': 'application/json',
           'x-access-token': this._sdk.idTokenResult.token
@@ -117,7 +117,7 @@ class Project {
     }
 
     try {
-      let res = await fetch(`${this._sdk.config.fetch.endpoint}/projects/${this.projectId}/leads${querystring.stringify(opts)}`, {
+      let res = await fetch(`${this._sdk.config.capture.endpoint}/projects/${this.projectId}/leads${querystring.stringify(opts)}`, {
         headers: {
           'Content-Type': 'application/json',
           'x-access-token': this._sdk.idTokenResult.token

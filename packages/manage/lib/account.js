@@ -34,7 +34,7 @@ class Account {
    */
   async createProject(projectId, projectName) {
     try {
-      let res = await fetch(`${this._sdk.config.fetch.endpoint}/projects`, {
+      let res = await fetch(`${this._sdk.config.capture.endpoint}/projects`, {
         body: JSON.stringify({
           projectId,
           projectName
@@ -55,7 +55,7 @@ class Account {
       }
 
       return new Project(this._sdk, await res.json());
-     } catch (err) {
+    } catch (err) {
       throw err;
     }
   }
@@ -67,7 +67,7 @@ class Account {
    */
   async project(projectId) {
     try {
-      let res = await fetch(`${this._sdk.config.fetch.endpoint}/projects/${projectId}`, {
+      let res = await fetch(`${this._sdk.config.capture.endpoint}/projects/${projectId}`, {
         headers: {
           'Content-Type': 'application/json',
           'x-access-token': this._sdk.idTokenResult.token
@@ -96,7 +96,7 @@ class Account {
    */
   async projects() {
     try {
-      let res = await fetch(`${this._sdk.config.fetch.endpoint}/projects`, {
+      let res = await fetch(`${this._sdk.config.capture.endpoint}/projects`, {
         headers: {
           'Content-Type': 'application/json',
           'x-access-token': this._sdk.idTokenResult.token

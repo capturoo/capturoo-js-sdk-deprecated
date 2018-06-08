@@ -1,0 +1,24 @@
+{
+  "env": {
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2017
+  },
+  "rules": {
+    "indent": [
+      "error",
+      2
+    ],
+    "semi-spacing": [
+      "error", {
+        "before": false, "after": true
+    }],
+    "max-len": [
+      "warn",
+      {
+        "code": 80
+      }
+    ]
+  }
+}

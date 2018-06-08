@@ -66,6 +66,10 @@ class Auth {
     return userCredential;
   }
 
+  async getToken() {
+    return this.idTokenResult;
+  }
+
   /**
    * Signs out a user
    * @returns {Promise.<undefined>}

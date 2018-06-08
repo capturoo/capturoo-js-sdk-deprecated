@@ -1,13 +1,18 @@
 const chai = require('chai');
 const assert = chai.assert;
-const DashboardSDK = require('../lib/DashboardSDK');
+
+const capturoo = require('@capturoo/app');
+require('@capturoo/auth');
+require('@capturoo/manage');
+
 const config = require('../config');
-const Project = require('../lib/Project');
+const Project = require('@capturoo/manage').Project;
 
 const TIMEOUT_MS = 20 * 1000;
 const SUPER_LONG_TIMEOUT_MS = 120 * 1000;
 
-let sdk;
+let auth;
+let manage;
 
 // firebase.User objects
 let user;
@@ -15,19 +20,22 @@ let account;
 let project1;
 let project2;
 
-describe('Admin SDK', async () => {
+describe('SDK', async () => {
   before(async () => {
     try {
-      sdk = new DashboardSDK(config);
+      capturoo.initApp(config);
+      auth = capturoo.auth(config);
+      manage = capturoo.manage(config);
     } catch (err) {
       console.error(err);
     }
   });
 
-  it('should signup andyfusniak+000@gmail.com as a new users', async function() {
+  it('should signup andyfusniak+000@gmail.com', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      let user = await sdk.signUpUser('andyfusniak+000@gmail.com', 'testtest', 'A User');
+      let user = await auth.signUpUser(
+        'andyfusniak+000@gmail.com', 'testtest', 'A User');
       assert.isObject(user, 'user should be an object type');
       assert.containsAllKeys(user, ['uid', 'email', 'displayName', 'created']);
       assert.strictEqual(user.email, 'andyfusniak+000@gmail.com');
@@ -40,8 +48,10 @@ describe('Admin SDK', async () => {
   it('should log in as user A', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      let userCredential = await sdk.signInWithEmailAndPassword('andyfusniak+000@gmail.com', 'testtest');
+      let userCredential = await auth.signInWithEmailAndPassword(
+        'andyfusniak+000@gmail.com', 'testtest');
       user = userCredential.user;
+      manage.setToken(await auth.getToken());
       assert.isObject(user, 'user should be an object type');
       assert.strictEqual(user.emailVerified, false);
     } catch (err) {
@@ -49,11 +59,11 @@ describe('Admin SDK', async () => {
     }
   });
 
-  it('should wait for GCF to generate new account', function(done) {
+  it('should wait for GCF to generate new account', function dsgdsfgsdfgsdfgdsfgdfsg(done) {
     this.timeout(SUPER_LONG_TIMEOUT_MS);
     function keepChecking() {
       setTimeout(function() {
-        sdk.getAccount(user.uid)
+        manage.account(user.uid)
           .then(a => {
             if (a) {
               account = a;
@@ -85,7 +95,7 @@ describe('Admin SDK', async () => {
   it('should retrieve account andyfusniak+000@gmail.com', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      account = await sdk.getAccount(user.uid);
+      account = await manage.account(user.uid);
       assert.hasAllKeys(account, [
         '_sdk',
         'accountId',
@@ -118,7 +128,7 @@ describe('Admin SDK', async () => {
     }
   });
 
-  it('should fail to create a project when project aleady exists', function(done) {
+  it('should fail to create a project (aleady exists)', function(done) {
     this.timeout(TIMEOUT_MS);
     account.createProject('apple-12345', 'Apple project')
       .then(project => {
@@ -134,7 +144,7 @@ describe('Admin SDK', async () => {
 
   it('should fail to retrieve a non-existent project', function(done) {
     this.timeout(TIMEOUT_MS);
-    account.getProject('missing')
+    account.project('missing')
       .then(project => {
         done(project);
       })
@@ -149,7 +159,8 @@ describe('Admin SDK', async () => {
   // it('should check that non-existent project is available', async function() {
   //   this.timeout(TIMEOUT_MS);
   //   try {
-  //     let exists = await account.isProjectIdAvailable('i-dont-exist', 'project id should be available');
+  //     let exists = await account.isProjectIdAvailable(
+  //       'i-dont-exist', 'project id should be available');
   //     assert.strictEqual(exists, true);
   //   } catch (err) {
   //     throw err;
@@ -159,7 +170,8 @@ describe('Admin SDK', async () => {
   // it('should check that an existing project is not available', async function() {
   //   this.timeout(TIMEOUT_MS);
   //   try {
-  //     let exists = await account.isProjectIdAvailable('apple-12345', 'project id should not be available');
+  //     let exists = await account.isProjectIdAvailable(
+  //       'apple-12345', 'project id should not be available');
   //     assert.strictEqual(exists, false);
   //   } catch (err) {
   //     throw err;
@@ -169,7 +181,7 @@ describe('Admin SDK', async () => {
   // it('should retrieve project one by projectId', async function() {
   //   this.timeout(TIMEOUT_MS);
   //   try {
-  //     let project = await account.getProject(project1.projectId);
+  //     let project = await account.project(project1.projectId);
   //     assert.exists(project, 'project is neither `null` nor `undefined`');
   //     assert.containsAllKeys(project, ['accountId', 'name', 'created', 'lastModified']);
   //     assert.strictEqual(project.projectId, project1.projectId);
@@ -183,7 +195,7 @@ describe('Admin SDK', async () => {
   //   this.timeout(TIMEOUT_MS);
 
   //   try {
-  //     let projects = await account.getAllProjects();
+  //     let projects = await account.projects();
 
   //     assert.isArray(projects);
   //     assert.isNotEmpty(projects);

@@ -32,12 +32,13 @@ class CapturooApp {
   }
 }
 
-function createCapturooNamespace() {
+function createCapturooNamespace(internalConfig) {
   let factories = {};
   let namespace = {
     // Hack to prevent Babel from modifying the object returned
     // as the firebase namespace.
     __esModule: true,
+    internalConfig: internalConfig,
     app: undefined,
     factories: factories,
     initApp: initApp,
@@ -46,7 +47,7 @@ function createCapturooNamespace() {
 
   function initApp(config) {
     Object.assign(namespace, {
-      config,
+      config: Object.assign(config, internalConfig),
       app: new CapturooApp(namespace)
     });
     return namespace.app;
@@ -61,9 +62,7 @@ function createCapturooNamespace() {
 
     factories[name] = serviceFactory;
 
-    console.log(`setup prototype for ${name}`);
     CapturooApp.prototype[name] = function(...args) {
-      console.log(args);
       const serviceFxn = this.getService.bind(this, name);
       return serviceFxn.apply(this, args);
     }
@@ -73,7 +72,6 @@ function createCapturooNamespace() {
         if (namespace.app) {
           return function(...args) {
             const service = namespace.app.getService(name);
-            console.log(service);
             return service;
           };
         }

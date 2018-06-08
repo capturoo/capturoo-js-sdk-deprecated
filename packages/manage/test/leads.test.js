@@ -1,11 +1,15 @@
 'use strict';
+const capturoo = require('@capturoo/app');
+require('@capturoo/auth');
+require('@capturoo/manage');
+
 const chai = require('chai');
 const assert = chai.assert;
-const DashboardSDK = require('../lib/DashboardSDK');
 const config = require('../config');
-const Project = require('../lib/Project');
-const Lead = require('../lib/Lead');
-const FIRESTORE_TIMEOUT_MS = 8000;
+const Project = require('@capturoo/manage').Project;
+const Lead = require('@capturoo/manage').Lead;
+const TIMEOUT_MS = 1000 * 10;
+const SUPER_LONG_TIMEOUT_MS = 1000 * 30;
 
 const leadsToBuild = [
   { email: 'andy@example.com', firstname: 'Andy', lastname: 'Andrews' },
@@ -20,9 +24,11 @@ const leadsToBuild = [
   { email: 'john@example.com', firstname: 'John', lastname: 'Johnson' }
 ];
 
-const TEST_ACCOUNT_EMAIL = 'acme@foo.bar';
+const TEST_ACCOUNT_EMAIL = 'acme+5@foo.bar';
 
-let sdk;
+let auth;
+let manage;
+let user;
 let account;
 let project;
 var leads = [];
@@ -30,23 +36,24 @@ var leads = [];
 describe('Leads', async () => {
   before(async () => {
     try {
-      sdk = new DashboardSDK(config);
+      capturoo.initApp(config);
+      auth = capturoo.auth(config);
+      manage = capturoo.manage(config);
     } catch (err) {
       console.error(err);
     }
   });
 
   it('should create a new Acme Widget Inc account', async function() {
-    this.timeout(FIRESTORE_TIMEOUT_MS);
+    this.timeout(TIMEOUT_MS);
     try {
-      user = await sdk.signUpUser(TEST_ACCOUNT_EMAIL, 'testtest', 'Acme Widgets Inc');
+      user = await auth.signUpUser(TEST_ACCOUNT_EMAIL, 'testtest', 'Acme Widgets Inc');
       assert.hasAllKeys(user, [
         'uid',
         'email',
         'displayName',
         'created'
       ]);
-      assert.strictEqual(user.uid, 'acme-uid');
       assert.strictEqual(user.displayName, 'Acme Widgets Inc');
     } catch (err) {
       throw err;
@@ -56,8 +63,9 @@ describe('Leads', async () => {
   it('should log in as user A', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      let userCredential = await sdk.signInWithEmailAndPassword(TEST_ACCOUNT_EMAIL, 'testtest');
+      let userCredential = await auth.signInWithEmailAndPassword(TEST_ACCOUNT_EMAIL, 'testtest');
       user = userCredential.user;
+      manage.setToken(await auth.getToken());
       assert.isObject(user, 'user should be an object type');
       assert.strictEqual(user.emailVerified, false);
     } catch (err) {
@@ -69,7 +77,7 @@ describe('Leads', async () => {
     this.timeout(SUPER_LONG_TIMEOUT_MS);
     function keepChecking() {
       setTimeout(function() {
-        sdk.getAccount(user.uid)
+        manage.account(user.uid)
           .then(a => {
             if (a) {
               account = a;
@@ -86,20 +94,20 @@ describe('Leads', async () => {
     keepChecking();
   });
 
-  // it('should create a new project for account Acme Widgets Inc', async function() {
-  //   this.timeout(FIRESTORE_TIMEOUT_MS);
-  //   try {
-  //     project = await account.createProject('big-promo-project', 'Big Promo Project');
+  it('should create a new project for account Acme Widgets Inc', async function() {
+    this.timeout(TIMEOUT_MS);
+    try {
+      project = await account.createProject('big-promo-project', 'Big Promo Project');
 
-  //     assert.exists(project, 'project is neither `null` nor `undefined`');
-  //     assert.instanceOf(project, Project, 'project is an instance of Project');
-  //   } catch (err) {
-  //     throw err;
-  //   }
-  // });
+      assert.exists(project, 'project is neither `null` nor `undefined`');
+      assert.instanceOf(project, Project, 'project is an instance of Project');
+    } catch (err) {
+      throw err;
+    }
+  });
 
   // it('should create a series of new leads', function(done) {
-  //   this.timeout(FIRESTORE_TIMEOUT_MS);
+  //   this.timeout(TIMEOUT_MS);
 
   //   let promises = [];
   //   leadsToBuild.map(async function(lead) {
@@ -130,7 +138,7 @@ describe('Leads', async () => {
   // });
 
   // it('should fetch a specific lead', async function() {
-  //   this.timeout(FIRESTORE_TIMEOUT_MS);
+  //   this.timeout(TIMEOUT_MS);
   //   try {
   //     let l = await project.getLead(leads['andy@example.com'].leadId);
 
@@ -149,7 +157,7 @@ describe('Leads', async () => {
   // });
 
   // it('should fetch all leads for given project', async function() {
-  //   this.timeout(FIRESTORE_TIMEOUT_MS);
+  //   this.timeout(TIMEOUT_MS);
   //   try {
   //     let fetchedLeads = await project.getAllLeads();
 
@@ -166,7 +174,7 @@ describe('Leads', async () => {
   // });
 
   // it('should delete each of the leads in the set in turn', function(done) {
-  //   this.timeout(FIRESTORE_TIMEOUT_MS);
+  //   this.timeout(TIMEOUT_MS);
 
   //   let promises = [];
   //   Object.values(leads).map(function(lead) {

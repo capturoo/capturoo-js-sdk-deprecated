@@ -26,6 +26,8 @@
     "exclude": [
       "index.js",
       "config.js",
+      "examples/**",
+      "rollup.config.js",
       "webpack.config.js",
       "coverage/**",
       "test/**",
@@ -54,7 +56,6 @@
   },
   "dependencies": {
     "@firebase/app": "^0.3.2",
-    "@firebase/auth": "^0.5.2",
     "node-fetch": "^2.1.2"
   }
 }

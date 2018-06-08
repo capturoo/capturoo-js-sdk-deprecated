@@ -1,9 +1,6 @@
-const firebase = require('@firebase/app');
-require('@firebase/auth');
-
+const firebase = require('@firebase/app').default;
 const fetch = require('node-fetch');
 const Account = require('./account');
-const Project = require('./project');
 
 class Manage {
   /**
@@ -23,8 +20,12 @@ class Manage {
     this.idTokenResult = undefined;
   }
 
+  setToken(token) {
+    this.idTokenResult = token;
+  }
+
   /**
-   * Get the account for the currently logged in user
+   * GetAccount: Get the account for the currently logged in user
    * @typedef account
    * @returns {Promise.<Account>}
    */
@@ -33,7 +34,7 @@ class Manage {
       if (!this.idTokenResult) {
         throw Error('auth/not-signed-in');
       }
-      let res = await fetch(`${this.config.fetch.endpoint}/account`, {
+      let res = await fetch(`${this.config.capture.endpoint}/account`, {
         headers: {
           'Content-Type': 'application/json',
           'x-access-token': this.idTokenResult.token

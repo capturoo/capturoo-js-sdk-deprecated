@@ -1,4 +1,4 @@
-const firebase = require('@firebase/app');
+const firebase = require('@firebase/app').default;
 const fetch = require('node-fetch');
 
 class Lead {
@@ -22,7 +22,7 @@ class Lead {
    */
   async delete() {
     try {
-      let res = await fetch(`${this._sdk.config.fetch.endpoint}/projects/${this.projectId}/leads/${this.leadId}`, {
+      let res = await fetch(`${this._sdk.config.capture.endpoint}/projects/${this.projectId}/leads/${this.leadId}`, {
         headers: {
           'Content-Type': 'application/json',
           'x-access-token': this._sdk.idTokenResult.token
