@@ -1,6 +1,7 @@
 'use strict';
 const capturoo = require('@capturoo/app');
 require('@capturoo/auth');
+require('@capturoo/capture');
 require('@capturoo/manage');
 
 const chai = require('chai');
@@ -24,10 +25,8 @@ const leadsToBuild = [
   { email: 'john@example.com', firstname: 'John', lastname: 'Johnson' }
 ];
 
-const TEST_ACCOUNT_EMAIL = 'acme+5@foo.bar';
+const TEST_ACCOUNT_EMAIL = 'acme+143@foo.bar';
 
-let auth;
-let manage;
 let user;
 let account;
 let project;
@@ -37,8 +36,6 @@ describe('Leads', async () => {
   before(async () => {
     try {
       capturoo.initApp(config);
-      auth = capturoo.auth(config);
-      manage = capturoo.manage(config);
     } catch (err) {
       console.error(err);
     }
@@ -47,7 +44,8 @@ describe('Leads', async () => {
   it('should create a new Acme Widget Inc account', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      user = await auth.signUpUser(TEST_ACCOUNT_EMAIL, 'testtest', 'Acme Widgets Inc');
+      user = await capturoo.auth()
+        .signUpUser(TEST_ACCOUNT_EMAIL, 'testtest', 'Acme Widgets Inc');
       assert.hasAllKeys(user, [
         'uid',
         'email',
@@ -63,9 +61,10 @@ describe('Leads', async () => {
   it('should log in as user A', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      let userCredential = await auth.signInWithEmailAndPassword(TEST_ACCOUNT_EMAIL, 'testtest');
+      let userCredential = await capturoo.auth()
+        .signInWithEmailAndPassword(TEST_ACCOUNT_EMAIL, 'testtest');
       user = userCredential.user;
-      manage.setToken(await auth.getToken());
+      capturoo.manage().setToken(await capturoo.auth().getToken());
       assert.isObject(user, 'user should be an object type');
       assert.strictEqual(user.emailVerified, false);
     } catch (err) {
@@ -77,7 +76,7 @@ describe('Leads', async () => {
     this.timeout(SUPER_LONG_TIMEOUT_MS);
     function keepChecking() {
       setTimeout(function() {
-        manage.account(user.uid)
+        capturoo.manage().account(user.uid)
           .then(a => {
             if (a) {
               account = a;
@@ -106,86 +105,116 @@ describe('Leads', async () => {
     }
   });
 
-  // it('should create a series of new leads', function(done) {
-  //   this.timeout(TIMEOUT_MS);
+  it('should create a series of new leads', function(done) {
+    this.timeout(TIMEOUT_MS);
 
-  //   let promises = [];
-  //   leadsToBuild.map(async function(lead) {
-  //     promises.push(project.createLead(lead.email, lead.firstname, lead.lastname));
-  //   });
+    let base64encoded = Buffer.from(
+      `${account.aid}:${project.publicApiKey}`).toString('base64');
+    capturoo.capture().setPublicApiKey(base64encoded);
 
-  //   Promise.all(promises)
-  //     .then(function(values) {
-  //       values.map(function(lead) {
-  //         leads[lead.email] = lead;
-  //         assert.exists(leads[lead.email], 'project is neither `null` nor `undefined`');
-  //         assert.instanceOf(leads[lead.email], Lead, 'lead is an instance of Lead');
-  //         assert.hasAllKeys(leads[lead.email], [
-  //           'db',
-  //           'leadId',
-  //           'projectId',
-  //           'email',
-  //           'firstname',
-  //           'lastname',
-  //           'created'
-  //         ]);
-  //       });
-  //       done();
-  //     })
-  //     .catch(err => {
-  //       done(err);
-  //     });
-  // });
+    let promises = [];
+    for (const lead of leadsToBuild) {
+      let l = capturoo.capture().createLead(lead, {});
+      promises.push(l);
+    }
 
-  // it('should fetch a specific lead', async function() {
-  //   this.timeout(TIMEOUT_MS);
-  //   try {
-  //     let l = await project.getLead(leads['andy@example.com'].leadId);
+    Promise.all(promises)
+      .then(function(values) {
+        values.map(function(item) {
+          leads[item.lead.email] = item;
+          assert.exists(leads[item.lead.email], 'project is neither `null` nor `undefined`');
 
-  //     assert.hasAllKeys(l, [
-  //       'db',
-  //       'leadId',
-  //       'projectId',
-  //       'email',
-  //       'firstname',
-  //       'lastname',
-  //       'created'
-  //     ]);
-  //   } catch (err) {
-  //     throw err;
-  //   }
-  // });
+          assert.hasAllDeepKeys(leads[item.lead.email], {
+            system: {
+              leadNum: true,
+              ip: true,
+              created: true,
+              leadId: true
+            },
+            lead: {
+              email: true,
+              lastname: true,
+              firstname: true
+            },
+            tracking: {}
+          });
+        });
+        done();
+      })
+      .catch(err => {
+        console.error(err);
+        done(err);
+      });
+  });
 
-  // it('should fetch all leads for given project', async function() {
-  //   this.timeout(TIMEOUT_MS);
-  //   try {
-  //     let fetchedLeads = await project.getAllLeads();
+  it('should fetch a specific lead', async function() {
+    this.timeout(TIMEOUT_MS);
+    try {
+      let lid = leads['andy@example.com'].system.leadId;
+      let item = await project.lead(lid);
 
-  //     fetchedLeads.map(function(lead) {
-  //       let createdLead = leads[lead.email];
+      assert.strictEqual(
+        item.data().lead.email,
+        leads['andy@example.com'].lead.email
+      );
+      assert.strictEqual(
+        item.data().lead.firstname,
+        leads['andy@example.com'].lead.firstname
+      );
+      assert.strictEqual(
+        item.data().lead.lastname,
+        leads['andy@example.com'].lead.lastname
+      );
+    } catch (err) {
+      throw err;
+    }
+  });
 
-  //       assert.strictEqual(lead.email, createdLead.email);
-  //       assert.strictEqual(lead.firstname, createdLead.firstname);
-  //       assert.strictEqual(lead.lastname, createdLead.lastname);
-  //     });
-  //   } catch (err) {
-  //     throw err;
-  //   }
-  // });
+  it('should fetch all leads for given project', async function() {
+    this.timeout(TIMEOUT_MS);
+    try {
+      let resultLeads = await project.queryLeads();
 
-  // it('should delete each of the leads in the set in turn', function(done) {
-  //   this.timeout(TIMEOUT_MS);
+      resultLeads.map(function(item) {
+        let data = item.data();
+        let email = data.lead.email;
 
-  //   let promises = [];
-  //   Object.values(leads).map(function(lead) {
-  //     lead.delete();
-  //   });
-  //   Promise.all(promises)
-  //     .then(values => {
-  //       done();
-  //     })
-  //     .catch(err => {
-  //       done(err);
-  //     })
-  // });
+        assert.strictEqual(
+          data.lead.email,
+          leads[email].lead.email
+        );
+        assert.strictEqual(
+          data.lead.firstname,
+          leads[email].lead.firstname
+        );
+        assert.strictEqual(
+          data.lead.lastname,
+          leads[email].lead.lastname
+        );
+      });
+    } catch (err) {
+      throw err;
+    }
+  });
+
+  it('should delete each of the leads in the set in turn', async function() {
+    this.timeout(TIMEOUT_MS);
+    try {
+      let resultLeads = await project.queryLeads();
+      for (const lead of resultLeads) {
+        await lead.delete();
+      }
+    } catch (err) {
+      throw err;
+    }
+  });
+
+  it('should delete user', async function() {
+    this.timeout(TIMEOUT_MS);
+    try {
+      await user.delete();
+    } catch (err) {
+      throw err;
+    }
+  });
 });

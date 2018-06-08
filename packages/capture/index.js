@@ -17,7 +17,7 @@ const capturoo = require('@capturoo/app');
 const Capture = require('./lib/capture');
 
 function registerCapture(instance) {
-  instance.registerService('capture', () => { return new Capture(capturoo.config || {}) });
+  instance.registerService('capture', () => { return new Capture(capturoo.config.capture || {}) });
 }
 
 registerCapture(capturoo);

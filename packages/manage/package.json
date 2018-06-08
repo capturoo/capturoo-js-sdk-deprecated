@@ -10,7 +10,9 @@
     "prepare": "npm link @capturoo/app",
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "test": "nyc --all --clean --reporter=text --reporter=html mocha --slow 3000 test/admin-sdk.test.js",
+    "test": "nyc --all --clean --reporter=text --reporter=html mocha --slow 3000 test",
+
+    "test-manage": "nyc --all --clean --reporter=text --reporter=html mocha --slow 3000 test/admin-sdk.test.js",
     "test-leads": "nyc --all --clean --reporter=text --reporter=html mocha test/leads.test.js",
     "coverage": "open -a \"/Applications/Google Chrome.app\" coverage/index.html"
   },
@@ -55,7 +57,6 @@
     "@capturoo/app": "0.1.0"
   },
   "dependencies": {
-    "@firebase/app": "^0.3.2",
     "node-fetch": "^2.1.2"
   }
 }

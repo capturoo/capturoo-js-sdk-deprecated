@@ -20,7 +20,6 @@ function registerCapture(instance) {
   instance.registerService('manage', () => { return new Manage(capturoo.config) });
 }
 
-console.log('registering...');
 registerCapture(capturoo);
 
 module.exports = {

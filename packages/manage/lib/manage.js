@@ -1,21 +1,27 @@
-const firebase = require('@firebase/app').default;
+/**
+ * Copyright 2018 Capturoo
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 const fetch = require('node-fetch');
 const Account = require('./account');
 
 class Manage {
   /**
-   * @param config firebase web client config from Firebase control panel
-   * @param {string} config.firebase.apiKey
-   * @param {string} config.firebase.authDomain
-   * @param {string} config.firebase.projectId
-   * @param {string} config.firebase.messagingSenderId
-   * @param {object} config.fetch
+   * @param {object} config.manage
    * @param {config} config
    */
   constructor(config) {
-    if (!firebase.apps.length) {
-      firebase.initializeApp(config.firebase);
-    }
     this.config = config || {};
     this.idTokenResult = undefined;
   }

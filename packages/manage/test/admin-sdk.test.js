@@ -14,13 +14,12 @@ const SUPER_LONG_TIMEOUT_MS = 120 * 1000;
 let auth;
 let manage;
 
-// firebase.User objects
 let user;
 let account;
 let project1;
 let project2;
 
-describe('SDK', async () => {
+describe('Manage SDK', async () => {
   before(async () => {
     try {
       capturoo.initApp(config);
@@ -85,7 +84,7 @@ describe('SDK', async () => {
   //  try {
   //    account.name = 'Acme Inc';
   //    account.update();
-  //    assert.strictEqual(account.accountId, user.uid);
+  //    assert.strictEqual(account.aid, user.uid);
   //    assert.strictEqual(account.name, 'Acme Inc');
   //  } catch (err) {
   //    throw err;
@@ -98,13 +97,13 @@ describe('SDK', async () => {
       account = await manage.account(user.uid);
       assert.hasAllKeys(account, [
         '_sdk',
-        'accountId',
+        'aid',
         'email',
         'privateApiKey',
         'created',
         'lastModified'
       ]);
-      assert.strictEqual(account.accountId, user.uid);
+      assert.strictEqual(account.aid, user.uid);
       assert.strictEqual(account.email, 'andyfusniak+000@gmail.com');
     } catch (err) {
       throw err;
@@ -178,18 +177,26 @@ describe('SDK', async () => {
   //   }
   // });
 
-  // it('should retrieve project one by projectId', async function() {
-  //   this.timeout(TIMEOUT_MS);
-  //   try {
-  //     let project = await account.project(project1.projectId);
-  //     assert.exists(project, 'project is neither `null` nor `undefined`');
-  //     assert.containsAllKeys(project, ['accountId', 'name', 'created', 'lastModified']);
-  //     assert.strictEqual(project.projectId, project1.projectId);
-  //     assert.strictEqual(project.name, project1.name);
-  //   } catch (err) {
-  //     throw err;
-  //   }
-  // });
+  it('should retrieve project one by pid', async function() {
+    this.timeout(TIMEOUT_MS);
+    try {
+      let project = await account.project(project1.pid);
+      assert.exists(project, 'project is neither `null` nor `undefined`');
+      assert.containsAllKeys(project, [
+        'accountId',
+        "leadsCount",
+        "projectId",
+        "projectName",
+        "publicApiKey",
+        'created',
+        'lastModified'
+      ]);
+      //assert.strictEqual(project.pid, project1.pid);
+      //assert.strictEqual(project.name, project1.name);
+    } catch (err) {
+      throw err;
+    }
+  });
 
   // it('should retrieve all projects associated with account one', async function() {
   //   this.timeout(TIMEOUT_MS);
