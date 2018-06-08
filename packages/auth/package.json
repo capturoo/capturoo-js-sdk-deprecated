@@ -24,8 +24,12 @@
     "rollup-plugin-babel": "^3.0.4",
     "rollup-plugin-node-resolve": "^3.3.0"
   },
+  "peerDependencies": {
+    "@capturoo/app": "^0.1.0"
+  },
   "dependencies": {
     "@firebase/app": "^0.3.3",
+    "@firebase/auth": "^0.5.2",
     "node-fetch": "^2.1.2"
   }
 }

@@ -1,4 +1,5 @@
-const firebase = require('@firebase/app');
+const firebase = require('@firebase/app').default;
+require('@firebase/auth');
 const fetch = require('node-fetch');
 
 class Auth {
