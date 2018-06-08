@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 Capturoo
+ * Copyright 2018 Capturoo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -10,16 +10,25 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
 class CapturooApp {
   constructor(namespace) {
     Object.assign(this, {
-      capturoo: namespace,
+      namespace,
       services: {}
     });
+  }
+
+  getService(name) {
+    if (!this.services[name]) {
+      const service = this.namespace.factories[name](this.namespace.config);
+      this.services[name] = service;
+    }
+
+    return this.services[name];
   }
 }
 
@@ -29,16 +38,18 @@ function createCapturooNamespace() {
     // Hack to prevent Babel from modifying the object returned
     // as the firebase namespace.
     __esModule: true,
-    apps: {},
+    app: undefined,
     factories: factories,
-    initApp: initApp
+    initApp: initApp,
+    registerService
   };
 
-  function initApp() {
-    let app = new CapturooApp(namespace);
-    apps.default= app;
-
-    return app;
+  function initApp(config) {
+    Object.assign(namespace, {
+      config,
+      app: new CapturooApp(namespace)
+    });
+    return namespace.app;
   }
 
   function registerService(name, serviceFactory) {
@@ -49,11 +60,32 @@ function createCapturooNamespace() {
     }
 
     factories[name] = serviceFactory;
+
+    console.log(`setup prototype for ${name}`);
+    CapturooApp.prototype[name] = function(...args) {
+      console.log(args);
+      const serviceFxn = this.getService.bind(this, name);
+      return serviceFxn.apply(this, args);
+    }
+
+    Object.defineProperty(namespace, name, {
+      get: function() {
+        if (namespace.app) {
+          return function(...args) {
+            const service = namespace.app.getService(name);
+            console.log(service);
+            return service;
+          };
+        }
+        return undefined;
+      }
+    });
+
   }
   return namespace;
 };
 
-export {
+module.exports = {
   CapturooApp,
   createCapturooNamespace
-}
+};
