@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-const internalConfig = require('./firebase-config');
-
 const { createCapturooNamespace } = require('./src/capturooApp');
 
-const capturoo = createCapturooNamespace(internalConfig);
+const capturoo = createCapturooNamespace();
 
 module.exports = capturoo;

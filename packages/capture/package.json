@@ -25,7 +25,7 @@
     "rollup-plugin-node-resolve": "^3.3.0"
   },
   "peerDependencies": {
-    "@capturoo/app": "0.1.0"
+    "@capturoo/app": "0.2.0"
   },
   "dependencies": {
     "node-fetch": "^2.1.2"

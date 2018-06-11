@@ -197,28 +197,29 @@ describe('Manage SDK', async () => {
     }
   });
 
-  // it('should retrieve all projects associated with account one', async function() {
-  //   this.timeout(TIMEOUT_MS);
+  it('should retrieve all projects associated with account one', async function() {
+    this.timeout(TIMEOUT_MS);
 
-  //   try {
-  //     let projects = await account.projects();
+    try {
+      let projects = await account.projects().get();
 
-  //     assert.isArray(projects);
-  //     assert.isNotEmpty(projects);
-  //     assert.lengthOf(projects, 2, 'array has length of 2');
+      console.log(projects);
+      assert.isArray(projects);
+      assert.isNotEmpty(projects);
+      assert.lengthOf(projects, 2, 'array has length of 2');
 
-  //     assert.typeOf(projects[0], 'object', 'we have an object');
-  //     assert.typeOf(projects[1], 'object', 'we have an object');
+      assert.typeOf(projects[0], 'object', 'we have an object');
+      assert.typeOf(projects[1], 'object', 'we have an object');
 
-  //     assert.strictEqual(projects[0].id, project1.id);
-  //     assert.strictEqual(projects[0].name, 'Banana project');
+      assert.strictEqual(projects[0].id, project1.id);
+      //assert.strictEqual(projects[0].projectName, 'Banana project');
 
-  //     assert.strictEqual(projects[1].id, project2.id);
-  //     assert.strictEqual(projects[1].name, 'Apple project');
-  //   } catch (err) {
-  //     throw err;
-  //   }
-  // });
+      assert.strictEqual(projects[1].id, project2.id);
+      //assert.strictEqual(projects[1].projectName, 'Apple project');
+    } catch (err) {
+      throw err;
+    }
+  });
 
   it('should delete user andyfusniak+000@gmail.com', async function() {
     this.timeout(TIMEOUT_MS);

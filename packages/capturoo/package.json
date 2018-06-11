@@ -14,7 +14,7 @@
   "browser": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "dependencies": {
-    "@capturoo/app": "^0.1.0",
+    "@capturoo/app": "^0.2.0",
     "@capturoo/auth": "^0.1.0",
     "@capturoo/capture": "^0.1.0",
     "@capturoo/manage": "^0.1.0"
