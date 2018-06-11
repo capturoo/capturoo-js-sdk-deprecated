@@ -4,7 +4,6 @@ const assert = chai.assert;
 const capturoo = require('@capturoo/app');
 require('@capturoo/auth');
 require('@capturoo/manage');
-
 const config = require('../config');
 const Project = require('@capturoo/manage').Project;
 
@@ -62,7 +61,7 @@ describe('Manage SDK', async () => {
     this.timeout(SUPER_LONG_TIMEOUT_MS);
     function keepChecking() {
       setTimeout(function() {
-        manage.account(user.uid)
+        manage.accounts().doc(user.uid)
           .then(a => {
             if (a) {
               account = a;
@@ -94,7 +93,7 @@ describe('Manage SDK', async () => {
   it('should retrieve account andyfusniak+000@gmail.com', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      account = await manage.account(user.uid);
+      account = await manage.accounts().doc(user.uid);
       assert.hasAllKeys(account, [
         '_sdk',
         'aid',
@@ -114,8 +113,8 @@ describe('Manage SDK', async () => {
   it('should create two new projects for account one', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      project1 = await account.createProject('apple-12345', 'Apple project');
-      project2 = await account.createProject('banana-45678', 'Banana project');
+      project1 = await account.projects().add('apple-12345', 'Apple project');
+      project2 = await account.projects().add('banana-45678', 'Banana project');
 
       assert.exists(project1, 'project1 is neither `null` nor `undefined`');
       assert.instanceOf(project1, Project, 'project1 is an instance of Project');
@@ -129,7 +128,7 @@ describe('Manage SDK', async () => {
 
   it('should fail to create a project (aleady exists)', function(done) {
     this.timeout(TIMEOUT_MS);
-    account.createProject('apple-12345', 'Apple project')
+    account.projects().add('apple-12345', 'Apple project')
       .then(project => {
         done(project);
       })
@@ -143,7 +142,7 @@ describe('Manage SDK', async () => {
 
   it('should fail to retrieve a non-existent project', function(done) {
     this.timeout(TIMEOUT_MS);
-    account.project('missing')
+    account.projects().doc('missing')
       .then(project => {
         done(project);
       })
@@ -180,7 +179,7 @@ describe('Manage SDK', async () => {
   it('should retrieve project one by pid', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      let project = await account.project(project1.pid);
+      let project = await account.projects().doc(project1.pid);
       assert.exists(project, 'project is neither `null` nor `undefined`');
       assert.containsAllKeys(project, [
         'accountId',

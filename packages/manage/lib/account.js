@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const Project = require('./project');
+const ProjectsCollection = require('./projects-collection');
 const fetch = require('node-fetch');
 
 class Account {
@@ -39,93 +39,11 @@ class Account {
   }
 
   /**
-   * CreateProject: Create a new project
-   * @param {String} projectId globally unique project ID
-   * @param {String} projectName project name
-   * @throws rethrows any underlying firebase.store exceptions
-   * @returns {Promise.<Project>}
-   * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Timestamp
-   */
-  async createProject(projectId, projectName) {
-    try {
-      let res = await fetch(`${this._sdk.config.capture.endpoint}/projects`, {
-        body: JSON.stringify({
-          projectId,
-          projectName
-        }),
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this._sdk.idTokenResult.token
-        },
-        mode: 'cors'
-      });
-
-      if (res.status >= 400) {
-        let data = await res.json();
-        let e = Error(data.message)
-        e.code = data.status;
-        throw e;
-      }
-
-      return new Project(this._sdk, this.aid, await res.json());
-    } catch (err) {
-      throw err;
-    }
-  }
-
-  /**
-   * GetProject: Get a project by project ID
-   * @param {String} projectId the Project's unique identifier
-   * @returns {Promise.<Project|null>}
-   */
-  async project(projectId) {
-    try {
-      let res = await fetch(`${this._sdk.config.capture.endpoint}/projects/${projectId}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this._sdk.idTokenResult.token
-        },
-        mode: 'cors'
-      });
-
-      if (res.status >= 400) {
-        let data = await res.json();
-        let e = Error(data.message)
-        e.code = data.status;
-        throw e;
-      }
-
-      let project = await res.json();
-      return project;
-    } catch (err) {
-      throw err;
-    }
-  }
-
-  /**
    * Fetch all projects associated to this account
-   * @returns {Promise.<Project[]>} of Project objects
-   * @throws rethrows firebase.firestore exceptions
+   * @returns {ProjectsCollection} collection of projects
    */
-  async projects() {
-    try {
-      let res = await fetch(`${this._sdk.config.capture.endpoint}/projects`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this._sdk.idTokenResult.token
-        },
-        mode: 'cors'
-      });
-
-      let projects = [];
-      for (const data of await res.json()) {
-        projects.push(new Project(this._sdk, this.aid, data));
-      };
-      return projects;
-    } catch (err) {
-      throw err;
-    }
+  projects() {
+    return new ProjectsCollection(this._sdk);
   }
 }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 const querystring = require('querystring');
-const Lead = require('./lead');
+const LeadsCollection = require('./leads-collection');
 const fetch = require('node-fetch');
 
 class Project {
@@ -40,127 +40,10 @@ class Project {
   }
 
   /**
-   * CreateLead: Creates a new lead
-   * @param {object} email
-   * @returns {Promise.<Lead>}
-   * @throws {Error}
+   * @returns {LeadsCollection}
    */
-  async createLead(data) {
-    try {
-      let res = await fetch(`${this._sdk.config.capture.endpoint}/leads`, {
-        body: JSON.stringify({
-          system: {},
-          tracking: {},
-          lead: data
-        }),
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this._sdk.idTokenResult.token
-        },
-        mode: 'cors'
-      });
-
-      if (res.status >= 400) {
-        let data = await res.json();
-        let e = Error(data.message)
-        e.code = data.status;
-        throw e;
-      }
-
-      return new Lead(this._sdk, this.pid, await res.json());
-    } catch (err) {
-      let e = new Error(err.response.data.message)
-      e.code = err.response.data.status;
-      throw e;
-    }
-  }
-
-  /**
-   * GetLead: Get a lead by ID
-   * @param {String} lid globally unique lead id
-   * @returns {Promise.<Lead>} undefined indicates the lead cannot be found
-   */
-  async lead(lid) {
-    try {
-      let res = await fetch(`${this._sdk.config.capture.endpoint}/projects/${this.pid}/leads/${lid}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this._sdk.idTokenResult.token
-        },
-        mode: 'cors'
-      });
-
-      if (res.status >= 400) {
-        let data = await res.json();
-        let e = Error(data.message)
-        e.code = data.status;
-        throw e;
-      }
-
-      let data = await res.json();
-      return new Lead(this._sdk, this.pid, data);
-    } catch (err) {
-      let e = new Error(err.response.data.message)
-      e.code = err.response.data.status;
-      throw e;
-    }
-  }
-
-  /**
-   * Query leads
-   * User type definition
-   * @param {boolean} [options.force] force deletion if project contains leads
-   * @param {number} [options.limit]
-   * @param {string} [options.startAfter]
-   * @param {string} [options.orderBy]
-   * @param {string} [options.orderDirection]
-   * @returns {Promise.<Lead[]>}
-   */
-  async queryLeads(options = {}) {
-    let opts = {};
-    if ('limit' in options) {
-      opts.limit = options.limit;
-    }
-
-    if ('startAfter' in options) {
-      opts.startAfter = options.startAfter;
-    }
-
-    if ('orderBy' in options) {
-      opt.orderBy = options.orderBy;
-    }
-
-    if ('orderDirection' in options) {
-      opt.orderDirection = options.orderDirection;
-    }
-
-    try {
-      let res = await fetch(`${this._sdk.config.capture.endpoint}/projects/${this.pid}/leads${querystring.stringify(opts)}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this._sdk.idTokenResult.token
-        },
-        mode: 'cors'
-      });
-
-      if (res.status >= 400) {
-        let data = await res.json();
-        let e = Error(data.message)
-        e.code = data.status;
-        throw e;
-      }
-
-      let leads = [];
-      for (const data of await res.json()) {
-        leads.push(new Lead(this._sdk, this.pid, data));
-      }
-      return leads;
-    } catch (err) {
-      let e = new Error(err.response.data.message)
-      e.code = err.response.data.status;
-      throw e;
-    }
+  leads() {
+    return new LeadsCollection(this._sdk, this.pid);
   }
 
   /**

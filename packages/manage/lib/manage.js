@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 const fetch = require('node-fetch');
-const Account = require('./account');
+const AccountsCollection = require('./accounts-collection');
 
 class Manage {
   /**
@@ -31,33 +31,11 @@ class Manage {
   }
 
   /**
-   * GetAccount: Get the account for the currently logged in user
-   * @typedef account
-   * @returns {Promise.<Account>}
+   * GetAccounts: Get accounts
+   * @returns {AccountsCollection}
    */
-  async account() {
-    try {
-      if (!this.idTokenResult) {
-        throw Error('auth/not-signed-in');
-      }
-      let res = await fetch(`${this.config.capture.endpoint}/account`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this.idTokenResult.token
-        },
-        mode: 'cors'
-      });
-
-      if (res.status >= 400) {
-        let data = await res.json();
-        let e = Error(data.message)
-        e.code = data.status;
-        throw e;
-      }
-      return new Account(this, await res.json());
-    } catch (err) {
-      throw err;
-    }
+  accounts() {
+    return new AccountsCollection(this);
   }
 }
 

@@ -9,8 +9,9 @@ const assert = chai.assert;
 const config = require('../config');
 const Project = require('@capturoo/manage').Project;
 const Lead = require('@capturoo/manage').Lead;
-const TIMEOUT_MS = 1000 * 10;
-const SUPER_LONG_TIMEOUT_MS = 1000 * 30;
+
+const TIMEOUT_MS = 15 * 1000;
+const SUPER_LONG_TIMEOUT_MS = 30 * 1000;
 
 const leadsToBuild = [
   { email: 'andy@example.com', firstname: 'Andy', lastname: 'Andrews' },
@@ -76,7 +77,7 @@ describe('Leads', async () => {
     this.timeout(SUPER_LONG_TIMEOUT_MS);
     function keepChecking() {
       setTimeout(function() {
-        capturoo.manage().account(user.uid)
+        capturoo.manage().accounts().doc(user.uid)
           .then(a => {
             if (a) {
               account = a;
@@ -96,7 +97,7 @@ describe('Leads', async () => {
   it('should create a new project for account Acme Widgets Inc', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      project = await account.createProject('big-promo-project', 'Big Promo Project');
+      project = await account.projects().add('big-promo-project', 'Big Promo Project');
 
       assert.exists(project, 'project is neither `null` nor `undefined`');
       assert.instanceOf(project, Project, 'project is an instance of Project');
@@ -151,7 +152,7 @@ describe('Leads', async () => {
     this.timeout(TIMEOUT_MS);
     try {
       let lid = leads['andy@example.com'].system.leadId;
-      let item = await project.lead(lid);
+      let item = await project.leads().doc(lid);
 
       assert.strictEqual(
         item.data().lead.email,
@@ -173,7 +174,7 @@ describe('Leads', async () => {
   it('should fetch all leads for given project', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      let resultLeads = await project.queryLeads();
+      let resultLeads = await project.leads().get();
 
       resultLeads.map(function(item) {
         let data = item.data();
@@ -200,7 +201,8 @@ describe('Leads', async () => {
   it('should delete each of the leads in the set in turn', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      let resultLeads = await project.queryLeads();
+      let resultLeads = await project.leads().get();
+
       for (const lead of resultLeads) {
         await lead.delete();
       }
