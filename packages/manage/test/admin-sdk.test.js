@@ -5,7 +5,6 @@ const capturoo = require('@capturoo/app');
 require('@capturoo/auth');
 require('@capturoo/manage');
 const config = require('../config');
-const Project = require('@capturoo/manage').Project;
 
 const TIMEOUT_MS = 20 * 1000;
 const SUPER_LONG_TIMEOUT_MS = 120 * 1000;
@@ -14,9 +13,9 @@ let auth;
 let manage;
 
 let user;
-let account;
-let project1;
-let project2;
+let accountDocRef;
+let project1DocRef;
+let project2DocRef;
 
 describe('Manage SDK', async () => {
   before(async () => {
@@ -57,14 +56,14 @@ describe('Manage SDK', async () => {
     }
   });
 
-  it('should wait for GCF to generate new account', function dsgdsfgsdfgsdfgdsfgdfsg(done) {
+  it('should wait for GCF to generate new account', function(done) {
     this.timeout(SUPER_LONG_TIMEOUT_MS);
     function keepChecking() {
       setTimeout(function() {
-        manage.accounts().doc(user.uid)
-          .then(a => {
-            if (a) {
-              account = a;
+        manage.accounts().doc(user.uid).get()
+          .then(docSnap => {
+            if (docSnap.exists) {
+              account = docSnap.ref;
               return done();
             }
             keepChecking();
@@ -93,17 +92,21 @@ describe('Manage SDK', async () => {
   it('should retrieve account andyfusniak+000@gmail.com', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      account = await manage.accounts().doc(user.uid);
-      assert.hasAllKeys(account, [
-        '_sdk',
+      let accountSnapshot = await manage.accounts().doc(user.uid).get();
+      if (!accountSnapshot.exists) {
+        throw Error(`Failed manage.accounts().doc(${user.uid}).get()`);
+      }
+
+      accountDocRef = accountSnapshot.ref;
+      assert.hasAllKeys(accountSnapshot.data(), [
         'aid',
         'email',
         'privateApiKey',
         'created',
         'lastModified'
       ]);
-      assert.strictEqual(account.aid, user.uid);
-      assert.strictEqual(account.email, 'andyfusniak+000@gmail.com');
+      assert.strictEqual(accountSnapshot.data().aid, user.uid);
+      assert.strictEqual(accountSnapshot.data().email, 'andyfusniak+000@gmail.com');
     } catch (err) {
       throw err;
     }
@@ -113,14 +116,14 @@ describe('Manage SDK', async () => {
   it('should create two new projects for account one', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      project1 = await account.projects().add('apple-12345', 'Apple project');
-      project2 = await account.projects().add('banana-45678', 'Banana project');
+      project1DocRef = await account.projects().add('apple-12345', 'Apple project');
+      project2DocRef = await account.projects().add('banana-45678', 'Banana project');
 
-      assert.exists(project1, 'project1 is neither `null` nor `undefined`');
-      assert.instanceOf(project1, Project, 'project1 is an instance of Project');
+      let project1Snapshot = await project1DocRef.get();
+      let project2Snapshot = await project1DocRef.get();
 
-      assert.exists(project2, 'project2 is neither `null` nor `undefined`');
-      assert.instanceOf(project2, Project, 'project2 is an instance of Project');
+      assert.strictEqual(project1Snapshot.exists, true);
+      assert.strictEqual(project2Snapshot.exists, true);
     } catch (err) {
       throw err;
     }
@@ -142,14 +145,15 @@ describe('Manage SDK', async () => {
 
   it('should fail to retrieve a non-existent project', function(done) {
     this.timeout(TIMEOUT_MS);
-    account.projects().doc('missing')
-      .then(project => {
-        done(project);
+    accountDocRef.projects().doc('missing').get()
+      .then(projectDocSnap => {
+        if (projectDocSnap.exists) {
+          done(project);
+        } else {
+          done();
+        }
       })
       .catch(err => {
-        if (err.code === 404) {
-          return done();
-        }
         done(err);
       });
   });
@@ -179,14 +183,16 @@ describe('Manage SDK', async () => {
   it('should retrieve project one by pid', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      let project = await account.projects().doc(project1.pid);
-      assert.exists(project, 'project is neither `null` nor `undefined`');
-      assert.containsAllKeys(project, [
-        'accountId',
-        "leadsCount",
-        "projectId",
-        "projectName",
-        "publicApiKey",
+      let projectDocRef = account.projects().doc(project1DocRef.pid);
+
+      let projectDocSnap = await projectDocRef.get();
+
+      assert.strictEqual(projectDocSnap.exists, true);
+      assert.containsAllKeys(projectDocSnap.data(), [
+        'leadsCount',
+        'pid',
+        'projectName',
+        'publicApiKey',
         'created',
         'lastModified'
       ]);
@@ -201,9 +207,9 @@ describe('Manage SDK', async () => {
     this.timeout(TIMEOUT_MS);
 
     try {
-      let projects = await account.projects().get();
+      let projectsQuerySnapshot = await account.projects().get();
 
-      console.log(projects);
+      let projects = projectsQuerySnapshot.docs();
       assert.isArray(projects);
       assert.isNotEmpty(projects);
       assert.lengthOf(projects, 2, 'array has length of 2');
@@ -211,10 +217,10 @@ describe('Manage SDK', async () => {
       assert.typeOf(projects[0], 'object', 'we have an object');
       assert.typeOf(projects[1], 'object', 'we have an object');
 
-      assert.strictEqual(projects[0].id, project1.id);
+      assert.strictEqual(projects[0].pid, project1DocRef.pid);
       //assert.strictEqual(projects[0].projectName, 'Banana project');
 
-      assert.strictEqual(projects[1].id, project2.id);
+      assert.strictEqual(projects[1].pid, project2DocRef.pid);
       //assert.strictEqual(projects[1].projectName, 'Apple project');
     } catch (err) {
       throw err;

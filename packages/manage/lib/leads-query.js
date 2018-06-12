@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const Lead = require('./lead');
+const QuerySnapshot = require('./query-snapshot');
+const LeadQueryDocumentSnapshot = require('./lead-query-document-snapshot');
 const fetch = require('node-fetch');
 
 class LeadsQuery {
-  constructor(sdk, orderBy, orderDirection, startAfter, limit) {
+  constructor(manage, orderBy, orderDirection, startAfter, limit) {
     Object.assign(this, {
-      _sdk: sdk,
+      manage,
       _orderBy: orderBy,
       _orderDirection: orderDirection,
       _startAfter: startAfter,
@@ -28,17 +29,17 @@ class LeadsQuery {
   }
 
   limit(limit) {
-    return new LeadsQuery(this._sdk, this._orderBy, this._orderDirection,
+    return new LeadsQuery(this.manage, this._orderBy, this._orderDirection,
       this._startAfter, limit);
   }
 
   orderBy(orderBy, orderDirection) {
-    return new LeadsQuery(this._sdk, orderBy, orderDirection,
+    return new LeadsQuery(this.manage, orderBy, orderDirection,
       this._startAfter, this._limit);
   }
 
   startAfter(startAfter) {
-    return new LeadsQuery(this._sdk, this._orderBy, this._orderDirection,
+    return new LeadsQuery(this.manage, this._orderBy, this._orderDirection,
       startAfter, this._limit);
   }
 
@@ -66,10 +67,12 @@ class LeadsQuery {
       } else {
         var q = '';
       }
-      let res = await fetch(`${this._sdk.config.capture.endpoint}/projects/${this.pid}/leads${q}`, {
+
+      let endpoint = `${this.manage.config.capturo.endpoint}`;
+      let res = await fetch(`${endpoint}/projects/${this.pid}/leads${q}`, {
         headers: {
           'Content-Type': 'application/json',
-          'x-access-token': this._sdk.idTokenResult.token
+          'x-access-token': this.manage.idTokenResult.token
         },
         mode: 'cors'
       });
@@ -83,9 +86,10 @@ class LeadsQuery {
 
       let leads = [];
       for (const data of await res.json()) {
-        leads.push(new Lead(this._sdk, this.pid, data));
+        let lid = data.system.leadId;
+        leads.push(new LeadQueryDocumentSnapshot(lid, this, data));
       }
-      return leads;
+      return new QuerySnapshot(leads);
     } catch (err) {
       let e = new Error(err.response.data.message)
       e.code = err.response.data.status;
@@ -93,3 +97,5 @@ class LeadsQuery {
     }
   }
 }
+
+module.exports = LeadsQuery;

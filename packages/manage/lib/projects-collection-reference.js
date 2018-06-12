@@ -13,42 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const Project = require('./project');
+const QuerySnapshot = require('./query-snapshot');
+const ProjectQueryDocumentSnapshot = require('./project-query-document-snapshot');
+const ProjectDocumentReference = require('./project-document-reference');
 const fetch = require('node-fetch');
-class ProjectsCollection {
-  constructor(sdk, accountInfo) {
+
+class ProjectsCollectionReference {
+  constructor(manage, parent) {
     Object.assign(this, {
-      _sdk: sdk
+      manage,
+      parent
     });
   }
 
-  /**
-   * GetProject: Get a project by project ID
-   * @param {String} pid project ID unqiue for this account
-   * @returns {Promise.<Project|null>}
-   */
-  async doc(pid) {
-    try {
-      let res = await fetch(`${this._sdk.config.capture.endpoint}/projects/${pid}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this._sdk.idTokenResult.token
-        },
-        mode: 'cors'
-      });
-
-      if (res.status >= 400) {
-        let data = await res.json();
-        let e = Error(data.message)
-        e.code = data.status;
-        throw e;
-      }
-
-      let project = await res.json();
-      return project;
-    } catch (err) {
-      throw err;
-    }
+  doc(pid) {
+    return new ProjectDocumentReference(this.manage, pid, this);
   }
 
   /**
@@ -56,19 +35,20 @@ class ProjectsCollection {
    */
   async get() {
     try {
-      let res = await fetch(`${this._sdk.config.capture.endpoint}/projects`, {
+      let res = await fetch(`${this.manage.config.capture.endpoint}/projects`, {
         headers: {
           'Content-Type': 'application/json',
-          'x-access-token': this._sdk.idTokenResult.token
+          'x-access-token': this.manage.idTokenResult.token
         },
         mode: 'cors'
       });
 
       let projects = [];
       for (const data of await res.json()) {
-        projects.push(new Project(this._sdk, this.aid, data));
+        let pid = data.projectId;
+        projects.push(new ProjectQueryDocumentSnapshot(pid, this, data));
       };
-      return projects;
+      return new QuerySnapshot(projects);
     } catch (err) {
       throw err;
     }
@@ -84,7 +64,7 @@ class ProjectsCollection {
    */
   async add(pid, projectName) {
     try {
-      let res = await fetch(`${this._sdk.config.capture.endpoint}/projects`, {
+      let res = await fetch(`${this.manage.config.capture.endpoint}/projects`, {
         body: JSON.stringify({
           projectId: pid,
           projectName
@@ -92,7 +72,7 @@ class ProjectsCollection {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-access-token': this._sdk.idTokenResult.token
+          'x-access-token': this.manage.idTokenResult.token
         },
         mode: 'cors'
       });
@@ -104,11 +84,11 @@ class ProjectsCollection {
         throw e;
       }
 
-      return new Project(this._sdk, this.aid, await res.json());
+      return new ProjectDocumentReference(this.manage, pid, await res.json());
     } catch (err) {
       throw err;
     }
   }
 }
 
-module.exports = ProjectsCollection;
+module.exports = ProjectsCollectionReference;

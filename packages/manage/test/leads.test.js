@@ -7,8 +7,6 @@ require('@capturoo/manage');
 const chai = require('chai');
 const assert = chai.assert;
 const config = require('../config');
-const Project = require('@capturoo/manage').Project;
-const Lead = require('@capturoo/manage').Lead;
 
 const TIMEOUT_MS = 15 * 1000;
 const SUPER_LONG_TIMEOUT_MS = 30 * 1000;
@@ -29,8 +27,9 @@ const leadsToBuild = [
 const TEST_ACCOUNT_EMAIL = 'acme+143@foo.bar';
 
 let user;
-let account;
-let project;
+let accountDocRef;
+let accountDocSnap;
+let projectDocRef;
 var leads = [];
 
 describe('Leads', async () => {
@@ -77,10 +76,11 @@ describe('Leads', async () => {
     this.timeout(SUPER_LONG_TIMEOUT_MS);
     function keepChecking() {
       setTimeout(function() {
-        capturoo.manage().accounts().doc(user.uid)
+        capturoo.manage().accounts().doc(user.uid).get()
           .then(a => {
             if (a) {
-              account = a;
+              accountDocSnap = a;
+              accountDocRef = a.ref;
               return done();
             }
             keepChecking();
@@ -97,10 +97,22 @@ describe('Leads', async () => {
   it('should create a new project for account Acme Widgets Inc', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      project = await account.projects().add('big-promo-project', 'Big Promo Project');
+      projectDocRef = await accountDocRef.projects().add('big-promo-project', 'Big Promo Project');
 
-      assert.exists(project, 'project is neither `null` nor `undefined`');
-      assert.instanceOf(project, Project, 'project is an instance of Project');
+      let projectSnapshot = await projectDocRef.get();
+      let data = projectSnapshot.data();
+      assert.exists(projectSnapshot.exists, true);
+      assert.hasAllDeepKeys(data, {
+        pid: true,
+        projectName: true,
+        leadsCount: true,
+        publicApiKey: true,
+        created: true,
+        lastModified: true
+      });
+      assert.strictEqual(data.pid, 'big-promo-project');
+      assert.strictEqual(data.projectName, 'Big Promo Project');
+      assert.strictEqual(data.leadsCount, 0);
     } catch (err) {
       throw err;
     }
@@ -109,17 +121,23 @@ describe('Leads', async () => {
   it('should create a series of new leads', function(done) {
     this.timeout(TIMEOUT_MS);
 
-    let base64encoded = Buffer.from(
-      `${account.aid}:${project.publicApiKey}`).toString('base64');
-    capturoo.capture().setPublicApiKey(base64encoded);
+    projectDocRef.get()
+      .then(projectDocSnap => {
+        let projectData = projectDocSnap.data();
 
-    let promises = [];
-    for (const lead of leadsToBuild) {
-      let l = capturoo.capture().createLead(lead, {});
-      promises.push(l);
-    }
+        let base64encoded = Buffer.from(
+          `${accountDocSnap.aid}:${projectData.publicApiKey}`)
+          .toString('base64');
+        capturoo.capture().setPublicApiKey(base64encoded);
 
-    Promise.all(promises)
+        let promises = [];
+        for (const lead of leadsToBuild) {
+          let l = capturoo.capture().createLead(lead, {});
+          promises.push(l);
+        }
+
+        return Promise.all(promises);
+      })
       .then(function(values) {
         values.map(function(item) {
           leads[item.lead.email] = item;
@@ -140,6 +158,7 @@ describe('Leads', async () => {
             tracking: {}
           });
         });
+
         done();
       })
       .catch(err => {
@@ -152,18 +171,21 @@ describe('Leads', async () => {
     this.timeout(TIMEOUT_MS);
     try {
       let lid = leads['andy@example.com'].system.leadId;
-      let item = await project.leads().doc(lid);
+      let leadDocRef = projectDocRef.leads().doc(lid);
+
+      let docSnap = await leadDocRef.get();
+      let data = docSnap.data();
 
       assert.strictEqual(
-        item.data().lead.email,
+        data.lead.email,
         leads['andy@example.com'].lead.email
       );
       assert.strictEqual(
-        item.data().lead.firstname,
+        data.lead.firstname,
         leads['andy@example.com'].lead.firstname
       );
       assert.strictEqual(
-        item.data().lead.lastname,
+        data.lead.lastname,
         leads['andy@example.com'].lead.lastname
       );
     } catch (err) {
@@ -174,7 +196,9 @@ describe('Leads', async () => {
   it('should fetch all leads for given project', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      let resultLeads = await project.leads().get();
+      let leadsQueryDocumentSnapshot = await projectDocRef.leads().get();
+
+      let resultLeads = leadsQueryDocumentSnapshot.docs();
 
       resultLeads.map(function(item) {
         let data = item.data();
@@ -201,7 +225,8 @@ describe('Leads', async () => {
   it('should delete each of the leads in the set in turn', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      let resultLeads = await project.leads().get();
+      let leadsQueryDocumentSnapshot = await projectDocRef.leads().get();
+      let resultLeads = leadsQueryDocumentSnapshot.docs();
 
       for (const lead of resultLeads) {
         await lead.delete();

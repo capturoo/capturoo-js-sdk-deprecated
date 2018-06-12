@@ -13,18 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const capturoo = require('@capturoo/app');
-const Manage = require('./lib/manage');
+class LeadDocumentSnapshot {
+  /**
+   * @param {bool} exists
+   */
+  constructor(lid, ref, exists, data) {
+    Object.assign(this, {
+      lid,
+      ref,
+      exists
+    });
 
-function registerCapture(instance) {
-  instance.registerService('manage', () => { return new Manage(capturoo.config) });
+    if (exists && data) {
+      this.lead = data;
+    } else {
+      this.lead = undefined;
+    }
+  }
+
+  /**
+   * Retrieves all fields in the lead as an Object
+   */
+  data() {
+    return this.lead;
+  }
 }
 
-registerCapture(capturoo);
-
-module.exports = {
-  capturoo,
-  AccountDocumentReference: require('./lib/account-document-reference'),
-  Project: require('./lib/project-document-reference'),
-  Lead: require('./lib/lead-document-reference')
-};
+module.exports = LeadDocumentSnapshot;

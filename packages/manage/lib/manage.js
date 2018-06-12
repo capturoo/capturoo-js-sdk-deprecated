@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const fetch = require('node-fetch');
-const AccountsCollection = require('./accounts-collection');
+const AccountsCollectionReference = require('./accounts-collection-reference');
 
 class Manage {
   /**
@@ -32,10 +31,13 @@ class Manage {
 
   /**
    * GetAccounts: Get accounts
-   * @returns {AccountsCollection}
+   * accounts() returns capturoo.manage.AccountsCollectionReference
+   * Gets an AccountsCollectionReference instance that refers to the
+   * accounts collection.
+   * @returns {capturoo.manage.AccountsCollectionReference}
    */
   accounts() {
-    return new AccountsCollection(this);
+    return new AccountsCollectionReference(this);
   }
 }
 

@@ -13,57 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const Lead = require('./lead');
+const LeadsQuery = require('./leads-query');
+const LeadDocumentReference = require('./lead-document-reference');
+const QuerySnapshot = require('./query-snapshot');
+const LeadQueryDocumentSnapshot = require('./lead-query-document-snapshot');
 const fetch = require('node-fetch');
 
-class LeadsCollection {
-  constructor(sdk, pid) {
+class LeadsCollectionReference {
+  constructor(manage, parent) {
     Object.assign(this, {
-      _sdk: sdk,
-      pid
+      manage,
+      parent
     });
   }
 
   /**
-   * GetLead: Get a lead by ID
-   * @param {String} lid globally unique lead id
-   * @returns {Promise<Lead[]>}
+   *
    */
-  async doc(lid) {
-    try {
-      let res = await fetch(`${this._sdk.config.capture.endpoint}/projects/${this.pid}/leads/${lid}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this._sdk.idTokenResult.token
-        },
-        mode: 'cors'
-      });
-
-      if (res.status >= 400) {
-        let data = await res.json();
-        let e = Error(data.message)
-        e.code = data.status;
-        throw e;
-      }
-
-      let data = await res.json();
-      return new Lead(this._sdk, this.pid, data);
-    } catch (err) {
-      let e = new Error(err.response.data.message)
-      e.code = err.response.data.status;
-      throw e;
-    }
+  doc(lid) {
+    return new LeadDocumentReference(this.manage, lid, this);
   }
 
   /**
    * CreateLead: Creates a new lead
+   * Adds a new document to this collection with the specified data,
+   * assigning it a document ID automatically.
    * @param {object} email
    * @returns {Promise.<Lead>}
    * @throws {Error}
    */
   async add(data) {
     try {
-      let res = await fetch(`${this._sdk.config.capture.endpoint}/leads`, {
+      let res = await fetch(`${this.manage.config.capture.endpoint}/leads`, {
         body: JSON.stringify({
           system: {},
           tracking: {},
@@ -72,7 +53,7 @@ class LeadsCollection {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-access-token': this._sdk.idTokenResult.token
+          'x-access-token': this.manage.idTokenResult.token
         },
         mode: 'cors'
       });
@@ -84,7 +65,7 @@ class LeadsCollection {
         throw e;
       }
 
-      return new Lead(this._sdk, this.pid, await res.json());
+      return new LeadDocumentReference(this.manage, this.pid, await res.json());
     } catch (err) {
       let e = new Error(err.response.data.message)
       e.code = err.response.data.status;
@@ -102,10 +83,11 @@ class LeadsCollection {
    */
   async get() {
     try {
-      let res = await fetch(`${this._sdk.config.capture.endpoint}/projects/${this.pid}/leads`, {
+      let endpoint = `${this.manage.config.capture.endpoint}`;
+      let res = await fetch(`${endpoint}/projects/${this.pid}/leads`, {
         headers: {
           'Content-Type': 'application/json',
-          'x-access-token': this._sdk.idTokenResult.token
+          'x-access-token': this.manage.idTokenResult.token
         },
         mode: 'cors'
       });
@@ -119,9 +101,10 @@ class LeadsCollection {
 
       let leads = [];
       for (const data of await res.json()) {
-        leads.push(new Lead(this._sdk, this.pid, data));
+        let lid = data.system.leadId;
+        leads.push(new LeadQueryDocumentSnapshot(lid, this, data));
       }
-      return leads;
+      return new QuerySnapshot(leads);
     } catch (err) {
       let e = new Error(err.response.data.message)
       e.code = err.response.data.status;
@@ -130,4 +113,4 @@ class LeadsCollection {
   }
 }
 
-module.exports = LeadsCollection;
+module.exports = LeadsCollectionReference;
