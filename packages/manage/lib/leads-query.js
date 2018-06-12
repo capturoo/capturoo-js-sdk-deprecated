@@ -86,7 +86,7 @@ class LeadsQuery {
 
       let leads = [];
       for (const data of await res.json()) {
-        let lid = data.system.leadId;
+        let lid = data.system.lid;
         leads.push(new LeadQueryDocumentSnapshot(lid, this, data));
       }
       return new QuerySnapshot(leads);

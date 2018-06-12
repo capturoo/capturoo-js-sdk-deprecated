@@ -45,7 +45,7 @@ class ProjectsCollectionReference {
 
       let projects = [];
       for (const data of await res.json()) {
-        let pid = data.projectId;
+        let pid = data.pid;
         projects.push(new ProjectQueryDocumentSnapshot(pid, this, data));
       };
       return new QuerySnapshot(projects);
@@ -66,7 +66,7 @@ class ProjectsCollectionReference {
     try {
       let res = await fetch(`${this.manage.config.capture.endpoint}/projects`, {
         body: JSON.stringify({
-          projectId: pid,
+          pid,
           projectName
         }),
         method: 'POST',

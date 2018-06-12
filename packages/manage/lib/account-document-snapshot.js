@@ -18,7 +18,7 @@ const fetch = require('node-fetch');
 class AccountDocumentSnapshot {
   /**
    * @typedef {object} AccountData
-   * @property {string} AccountData.accountId
+   * @property {string} AccountData.aid
    * @property {string} AccountData.email
    * @property {string} AccountData.privateApiKey
    * @property {Date} AccountData.created
@@ -38,7 +38,7 @@ class AccountDocumentSnapshot {
 
     if (exists && accountData) {
       this.account = {
-        aid: accountData.accountId,
+        aid: accountData.aid,
         email: accountData.email,
         privateApiKey: accountData.privateApiKey,
         created: new Date(accountData.created),

@@ -27,7 +27,7 @@
 class ProjectQueryDocumentSnapshot {
   /**
    * @typedef {object} ProjectData
-   * @property {string} ProjectData.projectId
+   * @property {string} ProjectData.pid
    * @property {string} ProjectData.name
    * @property {string} ProjectData.publicApiKey
    * @property {number} ProjectData.leadsCount
@@ -50,7 +50,7 @@ class ProjectQueryDocumentSnapshot {
     });
 
     this.project = {
-      pid: projectData.projectId,
+      pid: projectData.pid,
       projectName: projectData.projectName,
       publicApiKey: projectData.publicApiKey,
       leadsCount: projectData.leadsCount,

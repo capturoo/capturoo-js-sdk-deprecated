@@ -8,7 +8,7 @@ const chai = require('chai');
 const assert = chai.assert;
 const config = require('../config');
 
-const TIMEOUT_MS = 15 * 1000;
+const TIMEOUT_MS = 20 * 1000;
 const SUPER_LONG_TIMEOUT_MS = 30 * 1000;
 
 const leadsToBuild = [
@@ -118,59 +118,51 @@ describe('Leads', async () => {
     }
   });
 
-  it('should create a series of new leads', function(done) {
+  it('should create a series of new leads', async function() {
     this.timeout(TIMEOUT_MS);
 
-    projectDocRef.get()
-      .then(projectDocSnap => {
-        let projectData = projectDocSnap.data();
+    try {
+      let projectDocSnap = await projectDocRef.get();
+      let projectData = projectDocSnap.data();
+      let base64encoded = Buffer.from(
+        `${accountDocSnap.aid}:${projectData.publicApiKey}`)
+        .toString('base64');
+      capturoo.capture().setPublicApiKey(base64encoded);
 
-        let base64encoded = Buffer.from(
-          `${accountDocSnap.aid}:${projectData.publicApiKey}`)
-          .toString('base64');
-        capturoo.capture().setPublicApiKey(base64encoded);
+      let data = [];
+      for (const lead of leadsToBuild) {
+        let l = await capturoo.capture().createLead(lead, {});
+        data.push(l);
+      }
 
-        let promises = [];
-        for (const lead of leadsToBuild) {
-          let l = capturoo.capture().createLead(lead, {});
-          promises.push(l);
-        }
+      data.map(function(item) {
+        leads[item.lead.email] = item;
+        assert.exists(leads[item.lead.email], 'project is neither `null` nor `undefined`');
 
-        return Promise.all(promises);
-      })
-      .then(function(values) {
-        values.map(function(item) {
-          leads[item.lead.email] = item;
-          assert.exists(leads[item.lead.email], 'project is neither `null` nor `undefined`');
-
-          assert.hasAllDeepKeys(leads[item.lead.email], {
-            system: {
-              leadNum: true,
-              ip: true,
-              created: true,
-              leadId: true
-            },
-            lead: {
-              email: true,
-              lastname: true,
-              firstname: true
-            },
-            tracking: {}
-          });
+        assert.hasAllDeepKeys(leads[item.lead.email], {
+          system: {
+            leadNum: true,
+            ip: true,
+            created: true,
+            lid: true
+          },
+          lead: {
+            email: true,
+            lastname: true,
+            firstname: true
+          },
+          tracking: {}
         });
-
-        done();
-      })
-      .catch(err => {
-        console.error(err);
-        done(err);
       });
+    } catch (err) {
+      throw err;
+    }
   });
 
-  it('should fetch a specific lead', async function() {
+  it('should get a specific lead', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      let lid = leads['andy@example.com'].system.leadId;
+      let lid = leads['andy@example.com'].system.lid;
       let leadDocRef = projectDocRef.leads().doc(lid);
 
       let docSnap = await leadDocRef.get();
