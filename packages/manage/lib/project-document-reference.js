@@ -45,13 +45,15 @@ class ProjectDocumentReference {
    * @returns {Promise.<Project|null>}
    */
   async get() {
-    let endpoint = `${this.manage.config.capture.endpoint}`;
+    let headers = {
+      'Content-Type': 'application/json'
+    };
+    Object.assign(headers, this.manage.getAuthHeader());
+
     try {
+      let endpoint = `${this.manage.config.capture.endpoint}`;
       let res = await fetch(`${endpoint}/projects/${this.pid}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this.manage.idTokenResult.token
-        },
+        headers,
         mode: 'cors'
       });
 
@@ -79,14 +81,16 @@ class ProjectDocumentReference {
    * @throws exception if the project contains leads
    */
   async delete() {
+    let headers = {
+      'Content-Type': 'application/json'
+    };
+    Object.assign(headers, this.manage.getAuthHeader());
+
     try {
       let endpoint = `${this.manage.config.fetch.endpoint}`;
       let res = await fetch(`${endpoint}/projects/${this.pid}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this.manage.idTokenResult.token
-        },
+        headers,
         mode: 'cors'
       });
 

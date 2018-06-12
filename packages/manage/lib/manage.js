@@ -21,12 +21,37 @@ class Manage {
    * @param {config} config
    */
   constructor(config) {
-    this.config = config || {};
-    this.idTokenResult = undefined;
+    Object.assign(this, {
+      config: config || {},
+      idTokenResult: undefined,
+      privateApiKey: undefined,
+      authMode: undefined
+    });
   }
 
   setToken(token) {
     this.idTokenResult = token;
+    this.authMode = 'token';
+  }
+
+  setPrivateApiKey(key) {
+    this.privateApiKey = this.privateApiKey;
+    this.authMode = 'private-api-key';
+  }
+
+  getAuthHeader() {
+    if (this.authMode === 'token') {
+      return {
+        'x-access-token': this.idTokenResult.token
+      };
+    } else if (this.authMode === 'private-api-key') {
+      return {
+        'x-api-key': this.privateApiKey
+      };
+    }
+    let e = Error('You must call setToken(token) or setPrivateApiKey(key) first before calling API methods.');
+    e.code = 'manage/auth-no-token-or-key-set';
+    throw e;
   }
 
   /**

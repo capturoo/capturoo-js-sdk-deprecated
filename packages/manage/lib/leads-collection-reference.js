@@ -43,6 +43,11 @@ class LeadsCollectionReference {
    * @throws {Error}
    */
   async add(data) {
+    let headers = {
+      'Content-Type': 'application/json'
+    };
+    Object.assign(headers, this.manage.getAuthHeader());
+
     try {
       let res = await fetch(`${this.manage.config.capture.endpoint}/leads`, {
         body: JSON.stringify({
@@ -51,10 +56,7 @@ class LeadsCollectionReference {
           lead: data
         }),
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this.manage.idTokenResult.token
-        },
+        headers,
         mode: 'cors'
       });
 
@@ -82,13 +84,15 @@ class LeadsCollectionReference {
    * @returns {Promise.<Lead[]>}
    */
   async get() {
+    let headers = {
+      'Content-Type': 'application/json'
+    };
+    Object.assign(headers, this.manage.getAuthHeader());
+
     try {
       let endpoint = `${this.manage.config.capture.endpoint}`;
       let res = await fetch(`${endpoint}/projects/${this.pid}/leads`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this.manage.idTokenResult.token
-        },
+        headers,
         mode: 'cors'
       });
 

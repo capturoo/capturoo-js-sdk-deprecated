@@ -35,13 +35,14 @@ class AccountDocumentReference {
    * @returns {Promise.<AccountDocumentSnapshot>}
    */
   async get() {
+    let headers = {
+      'Content-Type': 'application/json'
+    };
+    Object.assign(headers, this.manage.getAuthHeader());
     try {
       let endpoint = `${this.manage.config.capture.endpoint}`;
       let res = await fetch(`${endpoint}/account`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this.manage.idTokenResult.token
-        },
+        headers,
         mode: 'cors'
       });
 

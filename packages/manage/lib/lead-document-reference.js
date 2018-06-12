@@ -33,14 +33,16 @@ class LeadDocumentReference {
    * @returns {Promise<LeadDocumentSnapshot>}
    */
   async get() {
+    let headers = {
+      'Content-Type': 'application/json'
+    };
+    Object.assign(headers, this.manage.getAuthHeader());
+
     try {
       let endpoint = `${this.manage.config.capture.endpoint}`;
       let uri = `${endpoint}/projects/${this.parent.parent.pid}/leads/${this.lid}`;
       let res = await fetch(uri, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this.manage.idTokenResult.token
-        },
+        headers,
         mode: 'cors'
       });
 
@@ -70,15 +72,17 @@ class LeadDocumentReference {
    * @returns {Promise.<undefined>}
    */
   async delete() {
-    let endpoint = `${this.manage.config.capture.endpoint}`;
-    let uri = `${endpoint}/projects/${this.parent.pid}/leads/${this.lid}`;
+    let headers = {
+      'Content-Type': 'application/json'
+    };
+    Object.assign(headers, this.manage.getAuthHeader());
+
     try {
+      let endpoint = `${this.manage.config.capture.endpoint}`;
+      let uri = `${endpoint}/projects/${this.parent.pid}/leads/${this.lid}`;
       let res = await fetch(uri, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this.manage.idTokenResult.token
-        },
+        headers,
         mode: 'cors'
       });
 

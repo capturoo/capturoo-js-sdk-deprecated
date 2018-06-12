@@ -34,12 +34,14 @@ class ProjectsCollectionReference {
    * @returns {Promise<Project[]>}
    */
   async get() {
+    let headers = {
+      'Content-Type': 'application/json'
+    };
+    Object.assign(headers, this.manage.getAuthHeader());
+
     try {
       let res = await fetch(`${this.manage.config.capture.endpoint}/projects`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this.manage.idTokenResult.token
-        },
+        headers,
         mode: 'cors'
       });
 
@@ -63,6 +65,11 @@ class ProjectsCollectionReference {
    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Timestamp
    */
   async add(pid, projectName) {
+    let headers = {
+      'Content-Type': 'application/json'
+    };
+    Object.assign(headers, this.manage.getAuthHeader());
+
     try {
       let res = await fetch(`${this.manage.config.capture.endpoint}/projects`, {
         body: JSON.stringify({
@@ -70,10 +77,7 @@ class ProjectsCollectionReference {
           projectName
         }),
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this.manage.idTokenResult.token
-        },
+        headers,
         mode: 'cors'
       });
 

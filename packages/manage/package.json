@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Manage component of the Capturoo JS SDK",
   "author": "Capturoo <support@capturoo.com> (https://www.capturoo.com/)",
+  "license": "Apache-2.0",
   "main": "dist/index.node.cjs.js",
   "browser": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
