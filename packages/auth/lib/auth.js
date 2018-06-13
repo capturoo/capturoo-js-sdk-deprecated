@@ -61,12 +61,16 @@ class Auth {
    * @see https://firebase.google.com/docs/reference/node/firebase.auth#.UserCredential
    */
   async signInWithEmailAndPassword(email, password) {
-    let userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
-    this.idTokenResult = await userCredential.user.getIdTokenResult();
-    return userCredential;
+    try {
+      let userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+      this.idTokenResult = await userCredential.user.getIdTokenResult();
+      return userCredential;
+    } catch (err) {
+      throw err;
+    }
   }
 
-  async getToken() {
+  getToken() {
     return this.idTokenResult;
   }
 
