@@ -44,7 +44,7 @@ function createCapturooNamespace() {
     registerService
   };
 
-  function initApp(config) {
+  function initApp(config = {}) {
     Object.assign(namespace, {
       config: Object.assign(config),
       app: new CapturooApp(namespace)
