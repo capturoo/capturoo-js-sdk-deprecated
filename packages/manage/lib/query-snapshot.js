@@ -72,6 +72,15 @@ class QuerySnapshot {
       callback(doc);
     }
   }
+
+  [Symbol.iterator]() {
+    var index = -1;
+    var docs  = this._docs;
+
+    return {
+      next: () => ({ value: docs[++index], done: !(index in docs) })
+    };
+  };
 }
 
 module.exports = QuerySnapshot;

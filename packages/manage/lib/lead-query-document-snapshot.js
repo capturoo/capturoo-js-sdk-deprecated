@@ -30,12 +30,12 @@ class LeadQueryDocumentSnapshot {
    *   document included in the DocumentSnapshot.
    * @param {bool} exists
    */
-  constructor(lid, ref, data = {}) {
+  constructor(lid, ref, lead = {}) {
     Object.assign(this, {
       lid,
       ref,
       exists: true,
-      data
+      lead
     });
   }
 

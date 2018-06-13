@@ -76,7 +76,7 @@ class LeadsCollectionReference {
   }
 
   orderBy(orderBy, orderDirection) {
-    return new LeadsQuery(orderBy, orderDirection, undefined, undefined);
+    return new LeadsQuery(this.manage, this, orderBy, orderDirection, undefined, undefined);
   }
 
   /**

@@ -58,13 +58,15 @@ class ProjectsCollectionReference {
 
   /**
    * CreateProject: Create a new project
-   * @param {String} pid project ID unqiue with this account
-   * @param {String} projectName project name
+   * @typedef {object} NewProjectData
+   * @property {string} NewProjectData.pid project ID
+   * @property {string} NewProjectData.projectName title of the project
+   * @param {NewProjectData} projectData project data of new project
    * @throws rethrows any underlying firebase.store exceptions
    * @returns {Promise.<Project>}
    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Timestamp
    */
-  async add(pid, projectName) {
+  async add(projectData) {
     let headers = {
       'Content-Type': 'application/json'
     };
@@ -73,8 +75,8 @@ class ProjectsCollectionReference {
     try {
       let res = await fetch(`${this.manage.config.capture.endpoint}/projects`, {
         body: JSON.stringify({
-          pid,
-          projectName
+          pid: projectData.pid,
+          projectName: projectData.projectName
         }),
         method: 'POST',
         headers,
@@ -88,7 +90,7 @@ class ProjectsCollectionReference {
         throw e;
       }
 
-      return new ProjectDocumentReference(this.manage, pid, await res.json());
+      return new ProjectDocumentReference(this.manage, projectData.pid, await res.json());
     } catch (err) {
       throw err;
     }

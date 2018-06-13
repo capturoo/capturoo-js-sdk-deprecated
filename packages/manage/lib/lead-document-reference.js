@@ -47,7 +47,6 @@ class LeadDocumentReference {
       });
 
       if (res.status === 404) {
-        console.log(res.status);
         return new LeadDocumentSnapshot(this.lid, this, false, undefined);
       }
 

@@ -64,7 +64,7 @@ describe('Leads', async () => {
       let userCredential = await capturoo.auth()
         .signInWithEmailAndPassword(TEST_ACCOUNT_EMAIL, 'testtest');
       user = userCredential.user;
-      capturoo.manage().setToken(await capturoo.auth().getToken());
+      capturoo.manage().setToken(capturoo.auth().getToken());
       assert.isObject(user, 'user should be an object type');
       assert.strictEqual(user.emailVerified, false);
     } catch (err) {

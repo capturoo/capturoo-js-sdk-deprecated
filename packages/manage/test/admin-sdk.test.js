@@ -48,7 +48,7 @@ describe('Manage SDK', async () => {
       let userCredential = await auth.signInWithEmailAndPassword(
         'andyfusniak+000@gmail.com', 'testtest');
       user = userCredential.user;
-      manage.setToken(await auth.getToken());
+      manage.setToken(capturoo.auth().getToken());
       assert.isObject(user, 'user should be an object type');
       assert.strictEqual(user.emailVerified, false);
     } catch (err) {

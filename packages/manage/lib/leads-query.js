@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const querystring = require('querystring');
 const QuerySnapshot = require('./query-snapshot');
 const LeadQueryDocumentSnapshot = require('./lead-query-document-snapshot');
 const fetch = require('node-fetch');
 
 class LeadsQuery {
-  constructor(manage, orderBy, orderDirection, startAfter, limit) {
+  constructor(manage, parent, orderBy, orderDirection, startAfter, limit) {
     Object.assign(this, {
       manage,
+      parent,
       _orderBy: orderBy,
       _orderDirection: orderDirection,
       _startAfter: startAfter,
@@ -29,17 +31,23 @@ class LeadsQuery {
   }
 
   limit(limit) {
-    return new LeadsQuery(this.manage, this._orderBy, this._orderDirection,
+    if (typeof limit !== 'number') {
+      let e = TypeError('.limit(limit: number) method expects a positive integer value.');
+      e.code = 'query/limit-type-error';
+      throw e;
+    }
+
+    return new LeadsQuery(this.manage, this.parent, this._orderBy, this._orderDirection,
       this._startAfter, limit);
   }
 
   orderBy(orderBy, orderDirection) {
-    return new LeadsQuery(this.manage, orderBy, orderDirection,
+    return new LeadsQuery(this.manage, this.parent, orderBy, orderDirection,
       this._startAfter, this._limit);
   }
 
   startAfter(startAfter) {
-    return new LeadsQuery(this.manage, this._orderBy, this._orderDirection,
+    return new LeadsQuery(this.manage, this.parent, this._orderBy, this._orderDirection,
       startAfter, this._limit);
   }
 
@@ -54,26 +62,29 @@ class LeadsQuery {
     }
 
     if (this._orderBy) {
-      opt.orderBy = this._orderBy;
+      opts.orderBy = this._orderBy;
     }
 
     if (this._orderDirection) {
-      opt.orderDirection = this._orderDirection;
+      opts.orderDirection = this._orderDirection;
     }
 
     try {
-      if (opts.length) {
+      if (Object.keys(opts).length) {
         var q = '?' + querystring.stringify(opts);
       } else {
         var q = '';
       }
 
-      let endpoint = `${this.manage.config.capturo.endpoint}`;
-      let res = await fetch(`${endpoint}/projects/${this.pid}/leads${q}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': this.manage.idTokenResult.token
-        },
+      let endpoint = `${this.manage.config.capture.endpoint}`;
+      let uri = `${endpoint}/projects/${this.parent.parent.pid}/leads${q}`;
+      let headers = {
+        'Content-Type': 'application/json'
+      };
+      Object.assign(headers, this.manage.getAuthHeader());
+
+      let res = await fetch(uri, {
+        headers,
         mode: 'cors'
       });
 
@@ -91,9 +102,10 @@ class LeadsQuery {
       }
       return new QuerySnapshot(leads);
     } catch (err) {
-      let e = new Error(err.response.data.message)
-      e.code = err.response.data.status;
-      throw e;
+      console.log(err);
+      //let e = new Error(err.response.data.message)
+      //e.code = err.response.data.status;
+      //throw e;
     }
   }
 }

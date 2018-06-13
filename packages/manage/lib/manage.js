@@ -35,7 +35,7 @@ class Manage {
   }
 
   setPrivateApiKey(key) {
-    this.privateApiKey = this.privateApiKey;
+    this.privateApiKey = key;
     this.authMode = 'private-api-key';
   }
 
