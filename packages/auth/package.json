@@ -1,6 +1,6 @@
 {
   "name": "@capturoo/auth",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "JavaScript library for Capturoo Auth SDK",
   "author": "Capturoo <support@capturoo.com> (https://www.capturoo.com/)",
   "license": "Apache-2.0",

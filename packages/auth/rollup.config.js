@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Capturoo 
+ * Copyright 2018 Capturoo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ export default [
    * browser builds
    */
   {
-    input: 'lib/auth.js',
+    input: 'index.js',
     output: [
       { file: pkg.browser, format: 'cjs', sourcemap: false },
       { file: pkg.module, format: 'es', sourcemap: false }
@@ -48,7 +48,7 @@ export default [
    * Node.js build
    */
   {
-    input: 'lib/auth.js',
+    input: 'index.js',
     output: [
       { file: pkg.main, format: 'cjs', sourcemap: false }
     ],
