@@ -19,11 +19,11 @@ const fetch = require('node-fetch');
 
 class AccountDocumentReference {
   /**
-   * @param {capturoo.manage.Manage} manage
+   * @param {capturoo.store.Store} store
    */
-  constructor(manage, aid, parent) {
+  constructor(store, aid, parent) {
     Object.assign(this, {
-      manage,
+      store,
       aid,
       parent
     });
@@ -31,16 +31,16 @@ class AccountDocumentReference {
 
   /**
    * get() returns Promise containing non-null
-   * capturoo.manage.AccountDocumentSnapshot
+   * capturoo.store.AccountDocumentSnapshot
    * @returns {Promise.<AccountDocumentSnapshot>}
    */
   async get() {
     let headers = {
       'Content-Type': 'application/json'
     };
-    Object.assign(headers, this.manage.getAuthHeader());
+    Object.assign(headers, this.store.getAuthHeader());
     try {
-      let endpoint = `${this.manage.config.capture.endpoint}`;
+      let endpoint = `${this.store.config.capture.endpoint}`;
       let res = await fetch(`${endpoint}/account`, {
         headers,
         mode: 'cors'
@@ -65,11 +65,11 @@ class AccountDocumentReference {
   /**
    * Gets a ProjectsCollectionReference instance that refers to the projects
    * collection.
-   * @returns {capturoo.manage.ProjectsCollectionReference} collection of
+   * @returns {capturoo.store.ProjectsCollectionReference} collection of
    *   projects.
    */
   projects() {
-    return new ProjectsCollectionReference(this.manage, this);
+    return new ProjectsCollectionReference(this.store, this);
   }
 }
 

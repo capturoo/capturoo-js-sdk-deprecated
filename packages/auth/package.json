@@ -1,6 +1,6 @@
 {
   "name": "@capturoo/auth",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "JavaScript library for Capturoo Auth SDK",
   "author": "Capturoo <support@capturoo.com> (https://www.capturoo.com/)",
   "license": "Apache-2.0",
@@ -25,7 +25,7 @@
     "rollup-plugin-node-resolve": "^3.3.0"
   },
   "peerDependencies": {
-    "@capturoo/app": "^0.2.0"
+    "@capturoo/app": "^1.0.0"
   },
   "dependencies": {
     "@firebase/app": "^0.3.3",

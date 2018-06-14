@@ -2,7 +2,7 @@
 const capturoo = require('@capturoo/app');
 require('@capturoo/auth');
 require('@capturoo/capture');
-require('@capturoo/manage');
+require('@capturoo/store');
 
 const chai = require('chai');
 const assert = chai.assert;
@@ -64,7 +64,7 @@ describe('Leads', async () => {
       let userCredential = await capturoo.auth()
         .signInWithEmailAndPassword(TEST_ACCOUNT_EMAIL, 'testtest');
       user = userCredential.user;
-      capturoo.manage().setToken(capturoo.auth().getToken());
+      capturoo.store().setToken(capturoo.auth().getToken());
       assert.isObject(user, 'user should be an object type');
       assert.strictEqual(user.emailVerified, false);
     } catch (err) {
@@ -76,7 +76,7 @@ describe('Leads', async () => {
     this.timeout(SUPER_LONG_TIMEOUT_MS);
     function keepChecking() {
       setTimeout(function() {
-        capturoo.manage().accounts().doc(user.uid).get()
+        capturoo.store().accounts().doc(user.uid).get()
           .then(a => {
             if (a) {
               accountDocSnap = a;

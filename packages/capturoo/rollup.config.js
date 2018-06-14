@@ -21,14 +21,14 @@ import path from 'path';
 import appPkg from './app/package.json';
 import authPkg from './auth/package.json';
 import capturePkg from './capture/package.json';
-import managePkg from './manage/package.json';
+import storePkg from './store/package.json';
 import pkg from './package.json';
 
 const pkgsByName = {
   app: appPkg,
   auth: authPkg,
   capture: capturePkg,
-  manage: managePkg
+  store: storePkg
 };
 
 const plugins = [
@@ -80,7 +80,7 @@ const appBuilds = [
 const components = [
   'auth',
   'capture',
-  'manage'
+  'store'
 ];
 const componentBuilds = components
   .map(component => {

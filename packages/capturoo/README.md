@@ -1,9 +1,9 @@
-# Capturoo - Leads capture and management system
+# Capturoo - Leads capture and store
 
 ## Overview
 
 [Capturoo](https://www.capturoo.com) provides the tools and infrastructure
-you need to capture and manage leads. This package supports web (browser)
+you need to capture and store leads. This package supports web (browser)
 and server (Node.js) clients.
 
 For more information, visit our online docs.
@@ -33,7 +33,7 @@ you need. The individually installable services are:
 - `capturoo-app` - The core `capturoo` client (required).
 - `capturoo-auth` - Capturoo Authentication (optional).
 - `capturoo-capture` - Capturoo Lead Capture (optional).
-- `capturoo-manage` - Capturoo Account, Project and Lead Manager (optional).
+- `capturoo-store` - Capturoo Account, Project and Lead Manager (optional).
 
 When using the firebase npm package, you can `require()` just the services that
 you use:

@@ -24,7 +24,7 @@ class AccountDocumentSnapshot {
    * @property {Date} AccountData.created
    * @property {Date} AccountData.lastModified
    * @param {DashboardSDK} sdk
-   * @param {capturoo.manage.AccountDocumentReference} non-null
+   * @param {capturoo.store.AccountDocumentReference} non-null
    *   The AccountDocumentReference for the document included in the
    *   DocumentSnapshot.
    * @param {AccountData} accountData

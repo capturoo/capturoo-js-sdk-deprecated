@@ -17,19 +17,19 @@ const AccountDocumentReference = require('./account-document-reference');
 const fetch = require('node-fetch');
 
 class AccountsCollectionReference {
-  constructor(manage) {
+  constructor(store) {
     Object.assign(this, {
-      manage,
+      store,
       parent: null
     });
   }
 
   /**
    * Gets an AccountDocumentReference for a document within the account.
-   * @returns {capturoo.manage.AccountDocumentReference}
+   * @returns {capturoo.store.AccountDocumentReference}
    */
   doc(aid) {
-    return new AccountDocumentReference(this.manage, aid, this);
+    return new AccountDocumentReference(this.store, aid, this);
   }
 
   /**

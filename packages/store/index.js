@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 Capturoo
+ * Copyright 2018 Capturoo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,5 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const capturoo = require('@capturoo/app');
+const Store = require('./lib/store');
 
-import '@capturoo/manage';
+function registerCapture(instance) {
+  instance.registerService('store', () => { return new Store(capturoo.config) });
+}
+
+registerCapture(capturoo);
+
+module.exports = {
+  capturoo,
+  AccountDocumentReference: require('./lib/account-document-reference'),
+  Project: require('./lib/project-document-reference'),
+  Lead: require('./lib/lead-document-reference')
+};

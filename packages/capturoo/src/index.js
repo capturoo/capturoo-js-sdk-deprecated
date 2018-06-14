@@ -20,7 +20,7 @@ When deploying Capturoo apps to production, it is advisable to only import
 the individual SDK components you intend to use.
 
 For the module builds, these are available in the following manner
-(replace <PACKAGE> with the name of a component - i.e. auth, capture, manage):
+(replace <PACKAGE> with the name of a component - i.e. auth, store, capture):
 
 CommonJS Modules:
 const capturoo = require('capturoo/app');
@@ -33,7 +33,7 @@ import 'capturoo/<PACKAGE>';
 
 import capturoo from '../app';
 import '../auth';
+import '../store';
 import '../capture';
-import '../manage';
 
 export default capturoo;

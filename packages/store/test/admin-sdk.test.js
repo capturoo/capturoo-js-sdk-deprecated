@@ -3,26 +3,26 @@ const assert = chai.assert;
 
 const capturoo = require('@capturoo/app');
 require('@capturoo/auth');
-require('@capturoo/manage');
+require('@capturoo/store');
 const config = require('../config');
 
 const TIMEOUT_MS = 20 * 1000;
 const SUPER_LONG_TIMEOUT_MS = 120 * 1000;
 
 let auth;
-let manage;
+let store;
 
 let user;
 let accountDocRef;
 let project1DocRef;
 let project2DocRef;
 
-describe('Manage SDK', async () => {
+describe('Store SDK', async () => {
   before(async () => {
     try {
       capturoo.initApp(config);
       auth = capturoo.auth(config);
-      manage = capturoo.manage(config);
+      store = capturoo.store(config);
     } catch (err) {
       console.error(err);
     }
@@ -48,7 +48,7 @@ describe('Manage SDK', async () => {
       let userCredential = await auth.signInWithEmailAndPassword(
         'andyfusniak+000@gmail.com', 'testtest');
       user = userCredential.user;
-      manage.setToken(capturoo.auth().getToken());
+      store.setToken(capturoo.auth().getToken());
       assert.isObject(user, 'user should be an object type');
       assert.strictEqual(user.emailVerified, false);
     } catch (err) {
@@ -60,7 +60,7 @@ describe('Manage SDK', async () => {
     this.timeout(SUPER_LONG_TIMEOUT_MS);
     function keepChecking() {
       setTimeout(function() {
-        manage.accounts().doc(user.uid).get()
+        store.accounts().doc(user.uid).get()
           .then(docSnap => {
             if (docSnap.exists) {
               account = docSnap.ref;
@@ -92,9 +92,9 @@ describe('Manage SDK', async () => {
   it('should retrieve account andyfusniak+000@gmail.com', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      let accountSnapshot = await manage.accounts().doc(user.uid).get();
+      let accountSnapshot = await store.accounts().doc(user.uid).get();
       if (!accountSnapshot.exists) {
-        throw Error(`Failed manage.accounts().doc(${user.uid}).get()`);
+        throw Error(`Failed store.accounts().doc(${user.uid}).get()`);
       }
 
       accountDocRef = accountSnapshot.ref;

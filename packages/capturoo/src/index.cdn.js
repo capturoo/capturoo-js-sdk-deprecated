@@ -20,7 +20,7 @@ When deploying Capturoo apps to production, it is advisable to only import
 the individual SDK components you intend to use.
 
 For the CDN builds, these are available in the following manner
-(replace <PACKAGE> with the name of a component - i.e. auth, capture, manage):
+(replace <PACKAGE> with the name of a component - i.e. auth, store, capture):
 
 https://code.capturooo.com/capturoojs/1.0.0/capturoo-<PACKAGE>.js
 `);
@@ -28,7 +28,7 @@ https://code.capturooo.com/capturoojs/1.0.0/capturoo-<PACKAGE>.js
 import capturoo from '../app';
 
 import '../auth';
+import '../store';
 import '../capture';
-import '../manage';
 
 export default capturoo;

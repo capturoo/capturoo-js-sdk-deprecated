@@ -17,7 +17,7 @@
 import capturoo from '../app';
 
 import '../auth';
+import '../store';
 import '../capture';
-import '../manage';
 
 export default capturoo;

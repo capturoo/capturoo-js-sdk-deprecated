@@ -19,15 +19,15 @@ const ProjectDocumentReference = require('./project-document-reference');
 const fetch = require('node-fetch');
 
 class ProjectsCollectionReference {
-  constructor(manage, parent) {
+  constructor(store, parent) {
     Object.assign(this, {
-      manage,
+      store,
       parent
     });
   }
 
   doc(pid) {
-    return new ProjectDocumentReference(this.manage, pid, this);
+    return new ProjectDocumentReference(this.store, pid, this);
   }
 
   /**
@@ -37,10 +37,10 @@ class ProjectsCollectionReference {
     let headers = {
       'Content-Type': 'application/json'
     };
-    Object.assign(headers, this.manage.getAuthHeader());
+    Object.assign(headers, this.store.getAuthHeader());
 
     try {
-      let res = await fetch(`${this.manage.config.capture.endpoint}/projects`, {
+      let res = await fetch(`${this.store.config.capture.endpoint}/projects`, {
         headers,
         mode: 'cors'
       });
@@ -70,10 +70,10 @@ class ProjectsCollectionReference {
     let headers = {
       'Content-Type': 'application/json'
     };
-    Object.assign(headers, this.manage.getAuthHeader());
+    Object.assign(headers, this.store.getAuthHeader());
 
     try {
-      let res = await fetch(`${this.manage.config.capture.endpoint}/projects`, {
+      let res = await fetch(`${this.store.config.capture.endpoint}/projects`, {
         body: JSON.stringify({
           pid: projectData.pid,
           projectName: projectData.projectName
@@ -90,7 +90,7 @@ class ProjectsCollectionReference {
         throw e;
       }
 
-      return new ProjectDocumentReference(this.manage, projectData.pid, await res.json());
+      return new ProjectDocumentReference(this.store, projectData.pid, await res.json());
     } catch (err) {
       throw err;
     }

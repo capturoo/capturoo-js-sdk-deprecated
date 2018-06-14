@@ -13,7 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class ProjectDocumentSnapshot {
+
+/**
+ * A ProjectQueryDocumentSnapshot contains data read from a document in your
+ * projects as part of a query. The document is guaranteed to exist and
+ * its data can be extracted with .data().
+ *
+ * A ProjectQueryDocumentSnapshot offers the same API surface as a
+ * ProjectDocumentSnapshot. Since query results contain only existing
+ * documents, the exists property will always be true and data() will never
+ * return undefined.
+ */
+class ProjectQueryDocumentSnapshot {
   /**
    * @typedef {object} ProjectData
    * @property {string} ProjectData.pid
@@ -22,31 +33,29 @@ class ProjectDocumentSnapshot {
    * @property {number} ProjectData.leadsCount
    * @property {string} ProjectData.created ISO string
    * @property {string} ProjectData.lastModified ISO string
-   * @param {capturoo.manage.Manage} sdk
-   * @param {capturoo.manage.ProjectDocumentReference} ref non-null
+   * @param {LeadDocumentReference} ref The DocumentReference for the
+   *   document included in the DocumentSnapshot.
+   * @param {bool} exists
+   * @param {capturoo.store.ProjectDocumentReference} ref non-null
    *   The ProjectDocumentReference for the document included in the
    *   ProjectDocumentSnapshot.
    * @param {bool} exists
    * @param {ProjectData} projectData
    */
-  constructor(pid, ref, exists, projectData) {
+  constructor(pid, ref, projectData) {
     Object.assign(this, {
       pid,
       ref,
-      exists
+      exists: true
     });
 
-    if (exists && projectData) {
-      this.project = {
-        pid: projectData.pid,
-        projectName: projectData.projectName,
-        publicApiKey: projectData.publicApiKey,
-        leadsCount: projectData.leadsCount,
-        created: new Date(projectData.created),
-        lastModified: new Date(projectData.lastModified)
-      }
-    } else {
-      this.project = undefined;
+    this.project = {
+      pid: projectData.pid,
+      projectName: projectData.projectName,
+      publicApiKey: projectData.publicApiKey,
+      leadsCount: projectData.leadsCount,
+      created: new Date(projectData.created),
+      lastModified: new Date(projectData.lastModified)
     }
   }
 
@@ -60,4 +69,4 @@ class ProjectDocumentSnapshot {
   }
 }
 
-module.exports = ProjectDocumentSnapshot;
+module.exports = ProjectQueryDocumentSnapshot;

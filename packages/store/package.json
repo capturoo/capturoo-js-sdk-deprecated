@@ -1,7 +1,7 @@
 {
-  "name": "@capturoo/manage",
-  "version": "0.1.0",
-  "description": "Manage component of the Capturoo JS SDK",
+  "name": "@capturoo/store",
+  "version": "1.0.0",
+  "description": "Store component of the Capturoo JS SDK",
   "author": "Capturoo <support@capturoo.com> (https://www.capturoo.com/)",
   "license": "Apache-2.0",
   "main": "dist/index.node.cjs.js",
@@ -12,7 +12,7 @@
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "test": "nyc --all --clean --reporter=text --reporter=html mocha --slow 3000 test",
-    "test-manage": "nyc --all --clean --reporter=text --reporter=html mocha --slow 3000 test/admin-sdk.test.js",
+    "test-store": "nyc --all --clean --reporter=text --reporter=html mocha --slow 3000 test/admin-sdk.test.js",
     "test-leads": "nyc --all --clean --reporter=text --reporter=html mocha test/leads.test.js",
     "coverage": "open -a \"/Applications/Google Chrome.app\" coverage/index.html"
   },
@@ -54,7 +54,7 @@
     "rollup-plugin-node-resolve": "^3.3.0"
   },
   "peerDependencies": {
-    "@capturoo/app": "0.2.0"
+    "@capturoo/app": "^1.0.0"
   },
   "dependencies": {
     "node-fetch": "^2.1.2"

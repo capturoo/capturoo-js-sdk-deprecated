@@ -19,9 +19,9 @@ const LeadQueryDocumentSnapshot = require('./lead-query-document-snapshot');
 const fetch = require('node-fetch');
 
 class LeadsQuery {
-  constructor(manage, parent, orderBy, orderDirection, startAfter, limit) {
+  constructor(store, parent, orderBy, orderDirection, startAfter, limit) {
     Object.assign(this, {
-      manage,
+      store,
       parent,
       _orderBy: orderBy,
       _orderDirection: orderDirection,
@@ -37,17 +37,17 @@ class LeadsQuery {
       throw e;
     }
 
-    return new LeadsQuery(this.manage, this.parent, this._orderBy, this._orderDirection,
+    return new LeadsQuery(this.store, this.parent, this._orderBy, this._orderDirection,
       this._startAfter, limit);
   }
 
   orderBy(orderBy, orderDirection) {
-    return new LeadsQuery(this.manage, this.parent, orderBy, orderDirection,
+    return new LeadsQuery(this.store, this.parent, orderBy, orderDirection,
       this._startAfter, this._limit);
   }
 
   startAfter(startAfter) {
-    return new LeadsQuery(this.manage, this.parent, this._orderBy, this._orderDirection,
+    return new LeadsQuery(this.store, this.parent, this._orderBy, this._orderDirection,
       startAfter, this._limit);
   }
 
@@ -76,12 +76,12 @@ class LeadsQuery {
         var q = '';
       }
 
-      let endpoint = `${this.manage.config.capture.endpoint}`;
+      let endpoint = `${this.store.config.capture.endpoint}`;
       let uri = `${endpoint}/projects/${this.parent.parent.pid}/leads${q}`;
       let headers = {
         'Content-Type': 'application/json'
       };
-      Object.assign(headers, this.manage.getAuthHeader());
+      Object.assign(headers, this.store.getAuthHeader());
 
       let res = await fetch(uri, {
         headers,

@@ -13,52 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const querystring = require('querystring');
-const ProjectDocumentSnapshot = require('./project-document-snapshot');
-const LeadsCollectionReference = require('./leads-collection-reference');
+const LeadDocumentSnapshot = require('./lead-document-snapshot');
 const fetch = require('node-fetch');
 
-class ProjectDocumentReference {
-  /**
-   * @param {capturoo.manage.Manage} manage
-   */
-  constructor(manage, pid, parent) {
+class LeadDocumentReference {
+  constructor(store, lid, parent) {
     Object.assign(this, {
-      manage,
-      pid,
+      store,
+      lid,
       parent
     });
   }
 
   /**
-   * @returns {LeadsCollectionReference}
-   */
-  leads() {
-    return new LeadsCollectionReference(this.manage, this);
-  }
-
-  /**
-   * GetProject: Get a project by project ID
+   * GetLead: Get a lead by ID
    * get() returns Promise containing non-null
-   * capturoo.manage.ProjectDocumentSnapshot
-   * Reads the document referred to by this ProjectDocumentReference.
-   * @returns {Promise.<Project|null>}
+   * capturoo.store.LeadDocumentSnapshot
+   * Reads the document referred to by this LeadDocumentReference.
+   * @returns {Promise<LeadDocumentSnapshot>}
    */
   async get() {
     let headers = {
       'Content-Type': 'application/json'
     };
-    Object.assign(headers, this.manage.getAuthHeader());
+    Object.assign(headers, this.store.getAuthHeader());
 
     try {
-      let endpoint = `${this.manage.config.capture.endpoint}`;
-      let res = await fetch(`${endpoint}/projects/${this.pid}`, {
+      let endpoint = `${this.store.config.capture.endpoint}`;
+      let uri = `${endpoint}/projects/${this.parent.parent.pid}/leads/${this.lid}`;
+      let res = await fetch(uri, {
         headers,
         mode: 'cors'
       });
 
       if (res.status === 404) {
-        return new ProjectDocumentSnapshot(this.pid, this, false, undefined);
+        return new LeadDocumentSnapshot(this.lid, this, false, undefined);
       }
 
       if (res.status >= 400) {
@@ -68,27 +57,29 @@ class ProjectDocumentReference {
         throw e;
       }
 
-      let project = await res.json();
-      return new ProjectDocumentSnapshot(this.pid, this, true, project);
+      let data = await res.json();
+      return new LeadDocumentSnapshot(this.lid, this, true, data);
     } catch (err) {
-      throw err;
+      let e = new Error(err.response.data.message)
+      e.code = err.response.data.status;
+      throw e;
     }
   }
 
   /**
-   * Deletes the project
+   * DeleteLead: Delete this lead
    * @returns {Promise.<undefined>}
-   * @throws exception if the project contains leads
    */
   async delete() {
     let headers = {
       'Content-Type': 'application/json'
     };
-    Object.assign(headers, this.manage.getAuthHeader());
+    Object.assign(headers, this.store.getAuthHeader());
 
     try {
-      let endpoint = `${this.manage.config.fetch.endpoint}`;
-      let res = await fetch(`${endpoint}/projects/${this.pid}`, {
+      let endpoint = `${this.store.config.capture.endpoint}`;
+      let uri = `${endpoint}/projects/${this.parent.pid}/leads/${this.lid}`;
+      let res = await fetch(uri, {
         method: 'DELETE',
         headers,
         mode: 'cors'
@@ -101,6 +92,7 @@ class ProjectDocumentReference {
         throw e;
       }
     } catch (err) {
+      console.error(err);
       let e = new Error(err.response.data.message)
       e.code = err.response.data.status;
       throw e;
@@ -108,4 +100,4 @@ class ProjectDocumentReference {
   }
 }
 
-module.exports = ProjectDocumentReference;
+module.exports = LeadDocumentReference;

@@ -24,7 +24,7 @@ class QuerySnapshot {
   /**
    *
    * @param {docs} docs  An array of all the documents in the QuerySnapshot
-   * @param {capturoo.manage.LeadsQuery} The query you called get or
+   * @param {capturoo.store.LeadsQuery} The query you called get or
    *   onSnapshot on to get the QuerySnapshot.
    */
   constructor(docs = [], query) {
@@ -45,7 +45,7 @@ class QuerySnapshot {
 
   /**
    * An array of all the documents in the QuerySnapshot
-   * @returns {capturoo.manage.LeadsQueryDocumentSnapshot} non-null Array
+   * @returns {capturoo.store.LeadsQueryDocumentSnapshot} non-null Array
    *   of non-null
    */
   docs() {

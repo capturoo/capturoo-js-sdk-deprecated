@@ -20,9 +20,9 @@ const LeadQueryDocumentSnapshot = require('./lead-query-document-snapshot');
 const fetch = require('node-fetch');
 
 class LeadsCollectionReference {
-  constructor(manage, parent) {
+  constructor(store, parent) {
     Object.assign(this, {
-      manage,
+      store,
       parent
     });
   }
@@ -31,7 +31,7 @@ class LeadsCollectionReference {
    *
    */
   doc(lid) {
-    return new LeadDocumentReference(this.manage, lid, this);
+    return new LeadDocumentReference(this.store, lid, this);
   }
 
   /**
@@ -46,10 +46,10 @@ class LeadsCollectionReference {
     let headers = {
       'Content-Type': 'application/json'
     };
-    Object.assign(headers, this.manage.getAuthHeader());
+    Object.assign(headers, this.store.getAuthHeader());
 
     try {
-      let res = await fetch(`${this.manage.config.capture.endpoint}/leads`, {
+      let res = await fetch(`${this.store.config.capture.endpoint}/leads`, {
         body: JSON.stringify({
           system: {},
           tracking: {},
@@ -67,7 +67,7 @@ class LeadsCollectionReference {
         throw e;
       }
 
-      return new LeadDocumentReference(this.manage, this.pid, await res.json());
+      return new LeadDocumentReference(this.store, this.pid, await res.json());
     } catch (err) {
       let e = new Error(err.response.data.message)
       e.code = err.response.data.status;
@@ -76,7 +76,7 @@ class LeadsCollectionReference {
   }
 
   orderBy(orderBy, orderDirection) {
-    return new LeadsQuery(this.manage, this, orderBy, orderDirection, undefined, undefined);
+    return new LeadsQuery(this.store, this, orderBy, orderDirection, undefined, undefined);
   }
 
   /**
@@ -87,10 +87,10 @@ class LeadsCollectionReference {
     let headers = {
       'Content-Type': 'application/json'
     };
-    Object.assign(headers, this.manage.getAuthHeader());
+    Object.assign(headers, this.store.getAuthHeader());
 
     try {
-      let endpoint = `${this.manage.config.capture.endpoint}`;
+      let endpoint = `${this.store.config.capture.endpoint}`;
       let res = await fetch(`${endpoint}/projects/${this.pid}/leads`, {
         headers,
         mode: 'cors'

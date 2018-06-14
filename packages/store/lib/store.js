@@ -15,9 +15,9 @@
  */
 const AccountsCollectionReference = require('./accounts-collection-reference');
 
-class Manage {
+class Store {
   /**
-   * @param {object} config.manage
+   * @param {object} config.store
    * @param {config} config
    */
   constructor(config) {
@@ -50,20 +50,20 @@ class Manage {
       };
     }
     let e = Error('You must call setToken(token) or setPrivateApiKey(key) first before calling API methods.');
-    e.code = 'manage/auth-no-token-or-key-set';
+    e.code = 'store/auth-no-token-or-key-set';
     throw e;
   }
 
   /**
    * GetAccounts: Get accounts
-   * accounts() returns capturoo.manage.AccountsCollectionReference
+   * accounts() returns capturoo.store.AccountsCollectionReference
    * Gets an AccountsCollectionReference instance that refers to the
    * accounts collection.
-   * @returns {capturoo.manage.AccountsCollectionReference}
+   * @returns {capturoo.store.AccountsCollectionReference}
    */
   accounts() {
     return new AccountsCollectionReference(this);
   }
 }
 
-module.exports = Manage;
+module.exports = Store;
