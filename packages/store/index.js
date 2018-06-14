@@ -22,9 +22,4 @@ function registerCapture(instance) {
 
 registerCapture(capturoo);
 
-module.exports = {
-  capturoo,
-  AccountDocumentReference: require('./lib/account-document-reference'),
-  Project: require('./lib/project-document-reference'),
-  Lead: require('./lib/lead-document-reference')
-};
+module.exports = capturoo;

@@ -1,4 +1,8 @@
 # CHANGELOG
+## 4.1.0 (14 June 2018)
++ Fixes unit tests for projects().add(object)
++ Configures rollup to not build external and peer dependencies
+
 ## 4.0.0 (3 June 2018)
 + Completely remove client-side Firestore calls and call the API instead
 + Replace Axios dependency and use fetch API

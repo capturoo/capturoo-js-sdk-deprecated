@@ -73,7 +73,8 @@ class ProjectsCollectionReference {
     Object.assign(headers, this.store.getAuthHeader());
 
     try {
-      let res = await fetch(`${this.store.config.capture.endpoint}/projects`, {
+      let uri = `${this.store.config.capture.endpoint}/projects`;
+      let res = await fetch(uri, {
         body: JSON.stringify({
           pid: projectData.pid,
           projectName: projectData.projectName

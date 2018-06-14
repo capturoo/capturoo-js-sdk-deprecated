@@ -24,7 +24,7 @@ const leadsToBuild = [
   { email: 'john@example.com', firstname: 'John', lastname: 'Johnson' }
 ];
 
-const TEST_ACCOUNT_EMAIL = 'acme+143@foo.bar';
+const TEST_ACCOUNT_EMAIL = process.env.TEST_ACCOUNT_EMAIL || 'acme+143@foo.bar';
 
 let user;
 let accountDocRef;
@@ -97,7 +97,10 @@ describe('Leads', async () => {
   it('should create a new project for account Acme Widgets Inc', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      projectDocRef = await accountDocRef.projects().add('big-promo-project', 'Big Promo Project');
+      projectDocRef = await accountDocRef.projects().add({
+        pid: 'big-promo-project',
+        projectName: 'Big Promo Project'
+      });
 
       let projectSnapshot = await projectDocRef.get();
       let data = projectSnapshot.data();
@@ -124,10 +127,7 @@ describe('Leads', async () => {
     try {
       let projectDocSnap = await projectDocRef.get();
       let projectData = projectDocSnap.data();
-      let base64encoded = Buffer.from(
-        `${accountDocSnap.aid}:${projectData.publicApiKey}`)
-        .toString('base64');
-      capturoo.capture().setPublicApiKey(base64encoded);
+      capturoo.capture().setPublicApiKey(`${projectData.publicApiKey}${accountDocSnap.aid}`);
 
       let data = [];
       for (const lead of leadsToBuild) {

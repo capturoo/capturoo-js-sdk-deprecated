@@ -116,12 +116,17 @@ describe('Store SDK', async () => {
   it('should create two new projects for account one', async function() {
     this.timeout(TIMEOUT_MS);
     try {
-      project1DocRef = await account.projects().add('apple-12345', 'Apple project');
-      project2DocRef = await account.projects().add('banana-45678', 'Banana project');
-
+      project1DocRef = await accountDocRef.projects().add({
+        pid: 'apple-12345',
+        projectName: 'Apple project'
+      });
+      project2DocRef = await accountDocRef.projects().add({
+        pid: 'banana-45678',
+        projectName: 'Banana project'
+      });
       let project1Snapshot = await project1DocRef.get();
       let project2Snapshot = await project1DocRef.get();
-
+ 
       assert.strictEqual(project1Snapshot.exists, true);
       assert.strictEqual(project2Snapshot.exists, true);
     } catch (err) {
@@ -131,7 +136,10 @@ describe('Store SDK', async () => {
 
   it('should fail to create a project (aleady exists)', function(done) {
     this.timeout(TIMEOUT_MS);
-    account.projects().add('apple-12345', 'Apple project')
+    accountDocRef.projects().add({
+      pid: 'apple-12345',
+      projectName: 'Apple project'
+    })
       .then(project => {
         done(project);
       })

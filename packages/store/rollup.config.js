@@ -26,6 +26,10 @@ const plugins = [
   commonjs()
 ];
 
+const external = Object.keys(
+  Object.assign({}, pkg.peerDependencies, pkg.dependencies)
+);
+
 export default [
   /**
    * Browser Builds
@@ -36,9 +40,8 @@ export default [
       { file: pkg.browser, format: 'cjs' },
       { file: pkg.module, format: 'es' }
     ],
-    plugins: [
-      ...plugins
-    ]
+    plugins,
+    external
   },
   /**
    * Node.js Build
@@ -48,8 +51,7 @@ export default [
     output: [
       { file: pkg.main, format: 'cjs' }
     ],
-    plugins: [
-      ...plugins
-    ]
+    plugins,
+    external
   }
 ];
