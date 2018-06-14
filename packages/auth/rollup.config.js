@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 import resolve from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
 import babel from 'rollup-plugin-babel';
 import pkg from './package.json';
 
 const plugins = [
   resolve(),
+  commonjs(),
   babel({
     exclude: 'node_modules/**' // only transpile our source code
   })
 ];
+
+const external = Object.keys(
+  Object.assign({}, pkg.peerDependencies, pkg.dependencies)
+);
 
 export default [
   /**
@@ -31,10 +37,11 @@ export default [
   {
     input: 'lib/auth.js',
     output: [
-      { file: pkg.browser, format: 'cjs', sourcemap: true },
-      { file: pkg.module, format: 'es', sourcemap: true }
+      { file: pkg.browser, format: 'cjs', sourcemap: false },
+      { file: pkg.module, format: 'es', sourcemap: false }
     ],
-    plugins: [...plugins]
+    plugins,
+    external
   },
 
   /**
@@ -43,8 +50,9 @@ export default [
   {
     input: 'lib/auth.js',
     output: [
-      { file: pkg.main, format: 'cjs', sourcemap: true }
+      { file: pkg.main, format: 'cjs', sourcemap: false }
     ],
-    plugins: [...plugins]
+    plugins,
+    external
   }
 ];
