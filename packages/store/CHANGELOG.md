@@ -1,4 +1,7 @@
 # CHANGELOG
+## 4.1.2 (14 June 2018)
++ rollup remove babel as the targets are esm and cjs
+
 ## 4.1.1 (14 June 2018)
 + Rollup with no treeshake to build the complete library
 
