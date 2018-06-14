@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 import resolve from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
 import pkg from './package.json';
 
 const plugins = [
-  resolve()
+  resolve(),
+  commonjs()
 ];
 
 export default [
   {
-    treeshake: false,
     input: 'index.js',
     output: [
       { file: pkg.browser, format: 'cjs' },
@@ -31,7 +32,6 @@ export default [
     plugins
   },
   {
-    treeshake: false,
     input: 'index.js',
     output: {
       file: pkg.main,
