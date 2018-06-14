@@ -1,6 +1,6 @@
 {
   "name": "@capturoo/store",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "Store component of the Capturoo JS SDK",
   "author": "Capturoo <support@capturoo.com> (https://www.capturoo.com/)",
   "license": "Apache-2.0",

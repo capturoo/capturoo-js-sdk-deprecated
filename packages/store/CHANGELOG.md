@@ -1,4 +1,7 @@
 # CHANGELOG
+## 4.1.1 (14 June 2018)
++ Rollup with no treeshake to build the complete library
+
 ## 4.1.0 (14 June 2018)
 + Fixes unit tests for projects().add(object)
 + Configures rollup to not build external and peer dependencies
