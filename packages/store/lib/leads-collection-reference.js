@@ -76,43 +76,33 @@ class LeadsCollectionReference {
   }
 
   orderBy(orderBy, orderDirection) {
-    return new LeadsQuery(this.store, this, orderBy, orderDirection, undefined, undefined);
+    return new LeadsQuery(
+      this.store,
+      this,
+      orderBy,
+      orderDirection,
+      undefined,
+      undefined
+    );
   }
 
   /**
    * Get all leads
-   * @returns {Promise.<Lead[]>}
+   * @returns {Promise.<capturoo.store.QuerySnapshot]>}
    */
   async get() {
-    let headers = {
-      'Content-Type': 'application/json'
-    };
-    Object.assign(headers, this.store.getAuthHeader());
-
     try {
-      let endpoint = `${this.store.config.capture.endpoint}`;
-      let res = await fetch(`${endpoint}/projects/${this.pid}/leads`, {
-        headers,
-        mode: 'cors'
-      });
-
-      if (res.status >= 400) {
-        let data = await res.json();
-        let e = Error(data.message)
-        e.code = data.status;
-        throw e;
-      }
-
-      let leads = [];
-      for (const data of await res.json()) {
-        let lid = data.system.lid;
-        leads.push(new LeadQueryDocumentSnapshot(lid, this, data));
-      }
-      return new QuerySnapshot(leads);
+      let query = new LeadsQuery(
+        this.store,
+        this,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      );
+      return await query.get();
     } catch (err) {
-      let e = new Error(err.response.data.message)
-      e.code = err.response.data.status;
-      throw e;
+      throw err;
     }
   }
 }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 const AccountsCollectionReference = require('./accounts-collection-reference');
+const pkg = require('../package.json');
 
 class Store {
   /**
@@ -25,7 +26,8 @@ class Store {
       config: config || {},
       idTokenResult: undefined,
       privateApiKey: undefined,
-      authMode: undefined
+      authMode: undefined,
+      VERSION: pkg.version
     });
   }
 

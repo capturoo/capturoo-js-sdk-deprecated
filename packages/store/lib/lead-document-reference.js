@@ -47,7 +47,7 @@ class LeadDocumentReference {
       });
 
       if (res.status === 404) {
-        return new LeadDocumentSnapshot(this.lid, this, false, undefined);
+        return new LeadDocumentSnapshot(this.lid, this, null);
       }
 
       if (res.status >= 400) {
@@ -58,7 +58,7 @@ class LeadDocumentReference {
       }
 
       let data = await res.json();
-      return new LeadDocumentSnapshot(this.lid, this, true, data);
+      return new LeadDocumentSnapshot(this.lid, this, data);
     } catch (err) {
       let e = new Error(err.response.data.message)
       e.code = err.response.data.status;
@@ -78,7 +78,7 @@ class LeadDocumentReference {
 
     try {
       let endpoint = `${this.store.config.capture.endpoint}`;
-      let uri = `${endpoint}/projects/${this.parent.pid}/leads/${this.lid}`;
+      let uri = `${endpoint}/projects/${this.parent.parent.pid}/leads/${this.lid}`;
       let res = await fetch(uri, {
         method: 'DELETE',
         headers,
@@ -92,7 +92,6 @@ class LeadDocumentReference {
         throw e;
       }
     } catch (err) {
-      console.error(err);
       let e = new Error(err.response.data.message)
       e.code = err.response.data.status;
       throw e;

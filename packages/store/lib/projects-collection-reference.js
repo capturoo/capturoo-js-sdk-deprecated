@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 const QuerySnapshot = require('./query-snapshot');
-const ProjectQueryDocumentSnapshot = require('./project-query-document-snapshot');
+const ProjectsQuery = require('./projects-query');
 const ProjectDocumentReference = require('./project-document-reference');
 const fetch = require('node-fetch');
 
@@ -34,23 +34,9 @@ class ProjectsCollectionReference {
    * @returns {Promise<Project[]>}
    */
   async get() {
-    let headers = {
-      'Content-Type': 'application/json'
-    };
-    Object.assign(headers, this.store.getAuthHeader());
-
     try {
-      let res = await fetch(`${this.store.config.capture.endpoint}/projects`, {
-        headers,
-        mode: 'cors'
-      });
-
-      let projects = [];
-      for (const data of await res.json()) {
-        let pid = data.pid;
-        projects.push(new ProjectQueryDocumentSnapshot(pid, this, data));
-      };
-      return new QuerySnapshot(projects);
+      let query = new ProjectsQuery(this.store, this);
+      return await query.get();
     } catch (err) {
       throw err;
     }
@@ -63,35 +49,15 @@ class ProjectsCollectionReference {
    * @property {string} NewProjectData.projectName title of the project
    * @param {NewProjectData} projectData project data of new project
    * @throws rethrows any underlying firebase.store exceptions
-   * @returns {Promise.<Project>}
-   * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Timestamp
+   * @returns {Promise.<ProjectDocumentReference>}
+   * @see
+   * https://firebase.google.com/docs/reference/js/firebase.firestore.Timestamp
    */
   async add(projectData) {
-    let headers = {
-      'Content-Type': 'application/json'
-    };
-    Object.assign(headers, this.store.getAuthHeader());
-
     try {
-      let uri = `${this.store.config.capture.endpoint}/projects`;
-      let res = await fetch(uri, {
-        body: JSON.stringify({
-          pid: projectData.pid,
-          projectName: projectData.projectName
-        }),
-        method: 'POST',
-        headers,
-        mode: 'cors'
-      });
-
-      if (res.status >= 400) {
-        let data = await res.json();
-        let e = Error(data.message)
-        e.code = data.status;
-        throw e;
-      }
-
-      return new ProjectDocumentReference(this.store, projectData.pid, await res.json());
+      const docRef = this.doc(projectData.pid);
+      await docRef.set(projectData);
+      return docRef;
     } catch (err) {
       throw err;
     }

@@ -21,6 +21,8 @@ const fetch = require('node-fetch');
 class ProjectDocumentReference {
   /**
    * @param {capturoo.store.Store} store
+   * @param {string} pid project ID
+   * @param {capturoo.store.ProjectsCollectionReference} parent
    */
   constructor(store, pid, parent) {
     Object.assign(this, {
@@ -35,6 +37,51 @@ class ProjectDocumentReference {
    */
   leads() {
     return new LeadsCollectionReference(this.store, this);
+  }
+
+  /**
+   * Writes to the document referred to by this DocumentReference. If the
+   * document does not exist yet, it will be created.
+   * @typedef {object} NewProjectData
+   * @property {string} NewProjectData.pid project ID
+   * @property {string} NewProjectData.projectName title of the project
+   * @param {NewProjectData} projectData project data of new project
+   */
+  async set(projectData) {
+    let headers = {
+      'Content-Type': 'application/json'
+    };
+    Object.assign(headers, this.store.getAuthHeader());
+
+    try {
+      let uri = `${this.store.config.capture.endpoint}/projects`;
+      let res = await fetch(uri, {
+        body: JSON.stringify({
+          pid: projectData.pid,
+          projectName: projectData.projectName
+        }),
+        method: 'POST',
+        headers,
+        mode: 'cors'
+      });
+
+      if (res.status >= 400) {
+        let data = await res.json();
+        let e = Error(data.message)
+        e.code = data.status;
+        throw e;
+      }
+
+      let data = await res.json();
+
+      // return new ProjectDocumentSnapshot(
+      //   projectData.pid,
+      //   this,
+      //   data
+      // );
+    } catch (err) {
+      throw err;
+    }
   }
 
   /**
@@ -58,7 +105,7 @@ class ProjectDocumentReference {
       });
 
       if (res.status === 404) {
-        return new ProjectDocumentSnapshot(this.pid, this, false, undefined);
+        return new ProjectDocumentSnapshot(this.pid, this, null);
       }
 
       if (res.status >= 400) {
@@ -69,7 +116,7 @@ class ProjectDocumentReference {
       }
 
       let project = await res.json();
-      return new ProjectDocumentSnapshot(this.pid, this, true, project);
+      return new ProjectDocumentSnapshot(this.pid, this, project);
     } catch (err) {
       throw err;
     }

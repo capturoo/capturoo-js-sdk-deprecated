@@ -1,6 +1,6 @@
 {
   "name": "@capturoo/store",
-  "version": "4.1.2",
+  "version": "4.1.2-dev",
   "description": "Store component of the Capturoo JS SDK",
   "author": "Capturoo <support@capturoo.com> (https://www.capturoo.com/)",
   "license": "Apache-2.0",
@@ -11,9 +11,9 @@
     "prepare": "npm link @capturoo/app",
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "test": "nyc --all --clean --reporter=text --reporter=html mocha --slow 3000 test",
-    "test-store": "nyc --all --clean --reporter=text --reporter=html mocha --slow 3000 test/admin-sdk.test.js",
-    "test-leads": "nyc --all --clean --reporter=text --reporter=html mocha test/leads.test.js",
+    "test": "env VERSION=4.1.2-dev nyc --all --clean --reporter=text --reporter=html mocha --slow 3000 test",
+    "test-store": "env VERSION=4.1.2-dev nyc --all --clean --reporter=text --reporter=html mocha --slow 3000 test/admin-sdk.test.js",
+    "test-leads": "env VERSION=4.1.2-dev nyc --all --clean --reporter=text --reporter=html mocha test/leads.test.js",
     "coverage": "open -a \"/Applications/Google Chrome.app\" coverage/index.html"
   },
   "files": [

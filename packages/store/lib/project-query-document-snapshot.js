@@ -24,7 +24,9 @@
  * documents, the exists property will always be true and data() will never
  * return undefined.
  */
-class ProjectQueryDocumentSnapshot {
+const ProjectDocumentSnapshot = require('./project-document-snapshot');
+
+class ProjectQueryDocumentSnapshot extends ProjectDocumentSnapshot {
   /**
    * @typedef {object} ProjectData
    * @property {string} ProjectData.pid
@@ -33,39 +35,18 @@ class ProjectQueryDocumentSnapshot {
    * @property {number} ProjectData.leadsCount
    * @property {string} ProjectData.created ISO string
    * @property {string} ProjectData.lastModified ISO string
-   * @param {LeadDocumentReference} ref The DocumentReference for the
-   *   document included in the DocumentSnapshot.
-   * @param {bool} exists
+   * @param {string} pid project IDS
    * @param {capturoo.store.ProjectDocumentReference} ref non-null
    *   The ProjectDocumentReference for the document included in the
    *   ProjectDocumentSnapshot.
-   * @param {bool} exists
    * @param {ProjectData} projectData
    */
   constructor(pid, ref, projectData) {
-    Object.assign(this, {
-      pid,
-      ref,
-      exists: true
-    });
-
-    this.project = {
-      pid: projectData.pid,
-      projectName: projectData.projectName,
-      publicApiKey: projectData.publicApiKey,
-      leadsCount: projectData.leadsCount,
-      created: new Date(projectData.created),
-      lastModified: new Date(projectData.lastModified)
-    }
+    super(pid, ref, projectData);
   }
 
-  /**
-   * Retrieves all fields in the document as an Object. Returns undefined
-   * if the document doesn't exist.
-   * @returns {ProjectData}
-   */
   data() {
-    return this.project;
+    return super.data();
   }
 }
 

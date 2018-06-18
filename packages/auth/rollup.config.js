@@ -36,6 +36,7 @@ export default [
    */
   {
     input: 'index.js',
+    treeshake: false,
     output: [
       { file: pkg.browser, format: 'cjs', sourcemap: false },
       { file: pkg.module, format: 'es', sourcemap: false }
@@ -49,6 +50,7 @@ export default [
    */
   {
     input: 'index.js',
+    treeshake: false,
     output: [
       { file: pkg.main, format: 'cjs', sourcemap: false }
     ],

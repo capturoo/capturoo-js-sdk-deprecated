@@ -13,33 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class LeadDocumentSnapshot {
-  /**
-   * @param {bool} exists
-   */
-  constructor(lid, ref, data) {
+
+class Query {
+  constructor(store, parent) {
     Object.assign(this, {
-      lid,
-      ref
+      store,
+      parent
     });
-
-    if (data) {
-      this.lead = data;
-    } else {
-      this.lead = null;
-    }
-  }
-
-  get exists() {
-    return this.lead !== null;
-  }
-
-  /**
-   * Retrieves all fields in the lead as an Object
-   */
-  data() {
-    return this.lead;
   }
 }
 
-module.exports = LeadDocumentSnapshot;
+module.exports = Query;

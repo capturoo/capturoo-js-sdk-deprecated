@@ -24,26 +24,23 @@
  * documents, the exists property will always be true and data() will never
  * return undefined.
  */
-class LeadQueryDocumentSnapshot {
+const LeadDocumentSnapshot = require('./lead-document-snapshot');
+
+class LeadQueryDocumentSnapshot extends LeadDocumentSnapshot {
   /**
    * @param {LeadDocumentReference} ref The DocumentReference for the
    *   document included in the DocumentSnapshot.
    * @param {bool} exists
    */
   constructor(lid, ref, lead = {}) {
-    Object.assign(this, {
-      lid,
-      ref,
-      exists: true,
-      lead
-    });
+    super(lid, ref, lead);
   }
 
   /**
    * Retrieves all fields in the lead as an Object
    */
   data() {
-    return this.lead;
+    return super.data();
   }
 }
 

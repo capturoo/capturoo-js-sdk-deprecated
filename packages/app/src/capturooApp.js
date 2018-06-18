@@ -54,7 +54,7 @@ function createCapturooNamespace() {
 
   function registerService(name, serviceFactory) {
     if (factories[name]) {
-      let e = new Error('Duplicate service "${name}"');
+      let e = new Error(`Duplicate service "${name}"`);
       e.code = 'duplicate-service';
       throw e;
     }

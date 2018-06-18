@@ -24,8 +24,8 @@ class QuerySnapshot {
   /**
    *
    * @param {docs} docs  An array of all the documents in the QuerySnapshot
-   * @param {capturoo.store.LeadsQuery} The query you called get or
-   *   onSnapshot on to get the QuerySnapshot.
+   * @param {capturoo.storeQuery} The query you called get on to get the
+   *   QuerySnapshot.
    */
   constructor(docs = [], query) {
     Object.assign(this, {
@@ -78,7 +78,10 @@ class QuerySnapshot {
     var docs  = this._docs;
 
     return {
-      next: () => ({ value: docs[++index], done: !(index in docs) })
+      next: () => ({
+        value: docs[++index],
+        done: !(index in docs)
+      })
     };
   };
 }

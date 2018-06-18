@@ -1,9 +1,9 @@
 const chai = require('chai');
 const assert = chai.assert;
 
-const capturoo = require('@capturoo/app');
-require('@capturoo/auth');
-require('@capturoo/store');
+const capturoo = require('../../app/index');
+require('../../auth/index');
+require('../index');
 const config = require('../config');
 
 const TIMEOUT_MS = 20 * 1000;
@@ -26,6 +26,14 @@ describe('Store SDK', async () => {
     } catch (err) {
       console.error(err);
     }
+  });
+
+  it('should check the store.VERSION', function(done) {
+    this.timeout(TIMEOUT_MS);
+    if (store.VERSION !== process.env.VERSION) {
+      done(`Expected version '${process.env.VERSION}', got '${store.VERSION}'`);
+    }
+    done();
   });
 
   it('should signup andyfusniak+000@gmail.com', async function() {
@@ -126,7 +134,7 @@ describe('Store SDK', async () => {
       });
       let project1Snapshot = await project1DocRef.get();
       let project2Snapshot = await project1DocRef.get();
- 
+
       assert.strictEqual(project1Snapshot.exists, true);
       assert.strictEqual(project2Snapshot.exists, true);
     } catch (err) {
@@ -192,11 +200,11 @@ describe('Store SDK', async () => {
     this.timeout(TIMEOUT_MS);
     try {
       let projectDocRef = account.projects().doc(project1DocRef.pid);
-
       let projectDocSnap = await projectDocRef.get();
 
       assert.strictEqual(projectDocSnap.exists, true);
-      assert.containsAllKeys(projectDocSnap.data(), [
+      let data = projectDocSnap.data();
+      assert.containsAllKeys(data, [
         'leadsCount',
         'pid',
         'projectName',
@@ -204,8 +212,6 @@ describe('Store SDK', async () => {
         'created',
         'lastModified'
       ]);
-      //assert.strictEqual(project.pid, project1.pid);
-      //assert.strictEqual(project.name, project1.name);
     } catch (err) {
       throw err;
     }

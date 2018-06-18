@@ -1,8 +1,8 @@
 'use strict';
-const capturoo = require('@capturoo/app');
-require('@capturoo/auth');
-require('@capturoo/capture');
-require('@capturoo/store');
+const capturoo = require('../../app/index');
+require('../../auth/index');
+require('../../capture/index');
+require('../index');
 
 const chai = require('chai');
 const assert = chai.assert;
@@ -221,7 +221,7 @@ describe('Leads', async () => {
       let resultLeads = leadsQueryDocumentSnapshot.docs();
 
       for (const lead of resultLeads) {
-        await lead.delete();
+        await lead.ref.delete();
       }
     } catch (err) {
       throw err;

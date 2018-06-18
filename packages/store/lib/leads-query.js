@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 const querystring = require('querystring');
+const Query = require('./query');
 const QuerySnapshot = require('./query-snapshot');
 const LeadQueryDocumentSnapshot = require('./lead-query-document-snapshot');
+const LeadDocumentReference = require('./lead-document-reference');
 const fetch = require('node-fetch');
 
-class LeadsQuery {
+class LeadsQuery extends Query {
   constructor(store, parent, orderBy, orderDirection, startAfter, limit) {
+    super(store, parent);
     Object.assign(this, {
-      store,
-      parent,
       _orderBy: orderBy,
       _orderDirection: orderDirection,
       _startAfter: startAfter,
@@ -98,14 +99,18 @@ class LeadsQuery {
       let leads = [];
       for (const data of await res.json()) {
         let lid = data.system.lid;
-        leads.push(new LeadQueryDocumentSnapshot(lid, this, data));
-      }
-      return new QuerySnapshot(leads);
+        leads.push(new LeadQueryDocumentSnapshot(
+          lid,
+          new LeadDocumentReference(this.store, lid, this.parent),
+          data
+        ));
+      };
+
+      return new QuerySnapshot(leads, this);
     } catch (err) {
-      console.log(err);
-      //let e = new Error(err.response.data.message)
-      //e.code = err.response.data.status;
-      //throw e;
+      let e = new Error(err.response.data.message)
+      e.code = err.response.data.status;
+      throw e;
     }
   }
 }
