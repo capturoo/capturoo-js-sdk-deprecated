@@ -1,4 +1,7 @@
 # CHANGELOG
+## 4.2.0 (19 June 2018)
++ Improved querying for projects and leads collections
+
 ## 4.1.2 (14 June 2018)
 + rollup remove babel as the targets are esm and cjs
 

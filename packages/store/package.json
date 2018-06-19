@@ -1,6 +1,6 @@
 {
   "name": "@capturoo/store",
-  "version": "4.1.2-dev",
+  "version": "4.2.0",
   "description": "Store component of the Capturoo JS SDK",
   "author": "Capturoo <support@capturoo.com> (https://www.capturoo.com/)",
   "license": "Apache-2.0",
@@ -11,9 +11,9 @@
     "prepare": "npm link @capturoo/app",
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "test": "env VERSION=4.1.2-dev nyc --all --clean --reporter=text --reporter=html mocha --slow 3000 test",
-    "test-store": "env VERSION=4.1.2-dev nyc --all --clean --reporter=text --reporter=html mocha --slow 3000 test/admin-sdk.test.js",
-    "test-leads": "env VERSION=4.1.2-dev nyc --all --clean --reporter=text --reporter=html mocha test/leads.test.js",
+    "test": "env VERSION=4.2.0 nyc --all --clean --reporter=text --reporter=html mocha --slow 3000 test",
+    "test-store": "env VERSION=4.2.0 nyc --all --clean --reporter=text --reporter=html mocha --slow 3000 test/admin-sdk.test.js",
+    "test-leads": "env VERSION=4.2.0 nyc --all --clean --reporter=text --reporter=html mocha test/leads.test.js",
     "coverage": "open -a \"/Applications/Google Chrome.app\" coverage/index.html"
   },
   "files": [
@@ -41,16 +41,19 @@
     ]
   },
   "devDependencies": {
+    "babel-core": "^6.26.3",
     "chai": "^4.1.2",
     "mocha": "^5.1.1",
     "nyc": "^12.0.2",
     "rollup": "^0.60.5",
+    "rollup-plugin-babel": "^3.0.4",
     "rollup-plugin-commonjs": "^9.1.3",
+    "rollup-plugin-json": "^3.0.0",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-resolve": "^3.3.0"
   },
   "peerDependencies": {
-    "@capturoo/app": "^1.0.0"
+    "@capturoo/app": "^1.0.1"
   },
   "dependencies": {
     "node-fetch": "^2.1.2"

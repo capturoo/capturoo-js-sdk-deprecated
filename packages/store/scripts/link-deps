@@ -2,4 +2,3 @@
 npm link @capturoo/app
 npm link @capturoo/auth
 npm link @capturoo/capture
-npm link @capturoo/store

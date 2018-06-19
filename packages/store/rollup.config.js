@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 import resolve from 'rollup-plugin-node-resolve';
-import builtins from 'rollup-plugin-node-builtins';
 import commonjs from 'rollup-plugin-commonjs';
+import json from 'rollup-plugin-json';
+import builtins from 'rollup-plugin-node-builtins';
+import babel from 'rollup-plugin-babel';
 import pkg from './package.json';
 
 const plugins = [
   resolve(),
+  commonjs(),
+  json(),
   builtins(),
-  commonjs()
+  babel({
+    exclude: 'node_modules/**' // only transpile our source code
+  })
 ];
 
 const external = Object.keys(
@@ -30,26 +36,27 @@ const external = Object.keys(
 
 export default [
   /**
-   * Browser Builds
+   * browser builds
    */
   {
     input: 'index.js',
     treeshake: false,
     output: [
-      { file: pkg.browser, format: 'cjs' },
-      { file: pkg.module, format: 'es' }
+      { file: pkg.browser, format: 'cjs', sourcemap: false },
+      { file: pkg.module, format: 'es', sourcemap: false }
     ],
     plugins,
     external
   },
+
   /**
-   * Node.js Build
+   * Node.js build
    */
   {
     input: 'index.js',
     treeshake: false,
     output: [
-      { file: pkg.main, format: 'cjs' }
+      { file: pkg.main, format: 'cjs', sourcemap: false }
     ],
     plugins,
     external
