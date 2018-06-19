@@ -1,6 +1,6 @@
 {
   "name": "@capturoo/app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The primary entrypoint to the Capturoo JS SDK",
   "author": "Capturoo <support@capturoo.com> (https://www.capturoo.com/)",
   "main": "dist/index.node.cjs.js",
