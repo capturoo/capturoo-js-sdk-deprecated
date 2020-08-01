@@ -6,7 +6,6 @@
   "license": "Apache-2.0",
   "homepage": "https://www.capturoo.com/",
   "scripts": {
-    "prepare": "scripts/install-peer-deps",
     "build": "rollup -c",
     "dev": "rollup -c -w"
   },
@@ -14,10 +13,10 @@
   "browser": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "dependencies": {
-    "@capturoo/app": "^1.0.0",
-    "@capturoo/auth": "^1.0.0",
-    "@capturoo/capture": "^0.5.0",
-    "@capturoo/store": "^1.0.0"
+    "@capturoo/app": "../app",
+    "@capturoo/auth": "../auth",
+    "@capturoo/capture": "../capture",
+    "@capturoo/store": "../store"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
